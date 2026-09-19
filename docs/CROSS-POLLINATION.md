@@ -90,7 +90,7 @@ donor 并集 19 个 skill（cc 独有 domain-rulings/red-blue-review，codex 独
 | product-spec-builder | √181行 | √155行 | √访谈原理/引导菜单/自检清单/0-1/发现方法；○问题库/模板/售后范例 | CHANGELOG 节→REQ 模板 §8；单元测试清单→指南 §7 |
 | arch-designer | √174行 | √179行 | √决策评价；○协作追演/模板/范例 | — |
 | dfx-designer | √157行 | √162行 | √测量方法；○模板/范例 | — |
-| design-brief-builder | √122行 | √119行 | √风格词汇（整件）；○问题库/模板/范例/视觉方法 | 风格词汇→`docs/DESIGN-VOCABULARY.md` |
+| design-brief-builder | √122行 | √119行 | √风格词汇（整件）；○问题库/模板/范例/视觉方法 | 风格词汇→`docs/DESIGN_VOCABULARY.md` |
 | design-maker | √184行 | √123行 | √质量地板（整件）；○原型构造/试走 | 质量地板→`docs/UI-QUALITY-FLOOR.md` |
 | dev-planner | √ | √ | √验收与依赖 | 计划模板→`docs/PLAN_TEMPLATE.md` |
 | dev-builder | √ | √ | ○状态结果链/教学案例 | — |

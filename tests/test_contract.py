@@ -65,7 +65,7 @@ class TestScaffoldContract(unittest.TestCase):
             self.assertIn("## Donor 出处", text, msg=e)
 
     def test_adopted_docs_present(self):
-        for p in ["docs/UI-QUALITY-FLOOR.md", "docs/DESIGN-VOCABULARY.md",
+        for p in ["docs/UI-QUALITY-FLOOR.md", "docs/DESIGN_VOCABULARY.md",
                   ".agents/rules/domain-rulings.md",
                   ".agents/feedback/FEEDBACK-INDEX.md",
                   ".agents/skills/red-blue-review/scripts/evidence.sh"]:
@@ -99,6 +99,15 @@ class TestScaffoldContract(unittest.TestCase):
 
     def test_manifest_consistent(self):
         r = run(["bash", "scripts/manifest.sh", "--check"])
+        self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
+
+    def test_predev_lint_clean_on_repo(self):
+        # CI gate.yml runs predev-lint on repo root: framework guides must not
+        # collide with the REQ-/DESIGN-/ARCH-/DFX- artifact namespaces.
+        import shutil as _shutil
+        if _shutil.which("node") is None:
+            self.skipTest("node absent")
+        r = run(["node", "scripts/predev-lint.mjs"])
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
     def test_check_self_adr(self):

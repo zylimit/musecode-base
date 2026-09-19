@@ -32,7 +32,7 @@ done
 
 # 1c. skill 全量必备文件（2026-09-19 追加，只增不减）
 for f in scripts/skill-lint.sh docs/PLAN_TEMPLATE.md docs/UI-QUALITY-FLOOR.md \
-         docs/DESIGN-VOCABULARY.md .agents/rules/domain-rulings.md \
+         docs/DESIGN_VOCABULARY.md .agents/rules/domain-rulings.md \
          .agents/feedback/FEEDBACK-INDEX.md \
          .agents/feedback/templates/feedback-topic-template.md \
          .agents/skills/red-blue-review/scripts/evidence.sh; do
