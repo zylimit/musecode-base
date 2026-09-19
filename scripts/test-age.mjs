@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 // test-age.mjs — 用例老化：读 .agents/harness-state/test-ledger.jsonl，列「跑够次数且一次没红过」的退休候选。
+// 来源：cc-base/.claude/scripts/test-age.mjs（整件搬运；适配：账本路径→.agents/harness-state、地板文件→smoke、用法文案）
+// 退役条件：账本连续两季零退休候选且套件稳定时删（改发布前人工看）。
 // 用法： node scripts/test-age.mjs [--min-runs N]   默认 20
 // 账本由 run-all.sh 每次运行追加（每条用例一行 JSON）；没有账本就直说没有，不假装算过。
 // 退出码：0=算完（有没有候选都算 0）；2=参数不对。

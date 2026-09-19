@@ -1,5 +1,7 @@
 #!/bin/bash
 # arch-check.sh — 架构防腐最小版：catalog 声明图校验 + JS/TS/Python 静态 import 实边对照 + 趋势棘轮。
+# 出处：本仓自写；方法来源见 docs/CROSS-POLLINATION.md（X6）。
+# 退役条件：连续一年零真实扫描（无下游 catalog 接入）则删扫描段，只留声明校验。
 # 实边范围：只扫 src/**（JS/TS 用静态 import，Python 用 AST helper，失败回退正则并声明）。
 #   相对导入按语言规则归属（JS 按文件路径规范化；Python 按目录≈包），解不出的记 partial；
 #   catalog 模块路径落在 src/ 之外的，WARN 明示未覆盖——零边不等于结构干净。
@@ -283,6 +285,9 @@ if scan or record or gate:
                         break
             if dst and dst != src:
                 real_edges.add((src, dst, f))
+    if scanned == 0:
+        # P3：空计划 = BLOCKED。0 文件还报绿就是空转闸——响亮失败，不静默。
+        errors.append("EMPTY_SCAN: scanned=0, nothing guarded (empty plan is BLOCKED, not green)")
     # 实边 vs 声明
     by_id = {m["id"]: m for m in modules}
     for (s, d, f) in sorted(real_edges):

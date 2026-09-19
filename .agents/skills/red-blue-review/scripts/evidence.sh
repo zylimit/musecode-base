@@ -1,5 +1,7 @@
 #!/bin/bash
 # evidence.sh — red-blue-review 证据包：范围/改动清单/删除审计/新文件/完整 diff。
+# 出处：本仓自写（行为对齐 cc-base 同名脚本）。
+# 退役条件：red-blue-review 退役时同步删。
 # 用法：bash evidence.sh [BASE] [HEAD|--working]
 #   BASE 默认最近 tag（无 tag 则 HEAD~5），HEAD 默认 HEAD；--working 审未提交工作树。
 # 退出码：0 产出证据包 / 2 ref 无效或用法错（失败响亮，不产空包）。

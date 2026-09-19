@@ -1,5 +1,7 @@
 #!/bin/bash
 # risk-scan.sh — 只读风险扫描：过期档位/损坏状态/残留标记/超限目录/无主待办。
+# 出处：本仓自写。
+# 退役条件：连续两季零命中则删。
 # 用法：bash scripts/risk-scan.sh [--help]
 # 退出码：0 无风险 / 1 有发现（报告即目的，不阻断）/ 2 用法错。
 set -uo pipefail

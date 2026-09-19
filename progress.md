@@ -5,7 +5,7 @@
 ## Pinned（封顶 15）
 
 - P1：项目 skills 唯一路径 `.agents/skills/`（ADR-0001，原生合规）。
-- P2：门禁按序 smoke → verify → check（+ arch-check）；禁 `--no-verify`。
+- P2：门禁按序 smoke → verify → check；禁 `--no-verify`。predev/plan/arch 本仓无对象，不接 CI（有对象再接）。
 - P3：`rc=3` 降级永不读作绿；空计划 = BLOCKED。
 - P4：security/safety/privacy 类检查永不可豁免、不可 fast 跳过。
 - P5：不经要求不 commit/push；2026-09-19 用户明确要求首推后已 push（本条约束继续有效）。
@@ -31,11 +31,23 @@
 
 ## 待办
 
-- [ ] P0：`gate-audit.sh`（死闸审计）与 `state-prune.sh`（保留销毁）。
+- [x] P0：`gate-audit.sh`（死闸审计）与 `state-prune.sh`（保留销毁）已落地（旧待办已更正）。
 - [ ] P0：`check.sh` 补 predev-lint 全量子集（度量数字/预算表/ADR 九字段）。
 - [ ] P1：第二轮精读（codex tests 断言级 + drill research 深层；cc 其余 12 章 + agent-notes + v3 文档）。
 - [ ] P1：抓官方 `interactive`/`session-messaging`/`rewind`/`auth` 页正文，补 `MUSE-NATIVE.md` §10。
 - [ ] P1：`.muse/hooks.json` 字段 schema 实测补全（现为骨架示例）。
+
+## 复盘（2026-09-19：mdlinkcheck dogfood，只记观察到的事实）
+
+- 交付：`examples/mdlinkcheck/`（check.py 59 行 + test_check.py 67 行 = 126 行）。`python3 -m pytest examples/mdlinkcheck/ -q` → 5 passed；`python3 examples/mdlinkcheck/check.py .` → clean。
+- 触发了：test-builder（先写 4 用例，红 4/4 再绿）、dev-builder（TDD 红绿循环、最小实现、触及面重跑）。
+- 没触发：product-spec-builder（直推：S 级单文件、无被访谈人，判档约 10 秒）、dev-planner（S 级直接做，其适用自带排除）。
+- 想用但用不上：code-review——作者≠评审在单会话无第二方，是结构缺口（缓解：测试先行 + 门禁全过 + diff 自读两遍，已声明未达标）。
+- 闸的拦截记录：工具开发中脚手架门禁零拦截（一次写对）；本轮门禁真实拦截过：manifest 漂移 ×3（`test_manifest_consistent`）、fitness 自触发（探针字面量）、EMPTY_SCAN（构造验证 errors=1）。
+- 绕开的：无 REQ/PLAN（S 级直推，有据）；无独立评审（结构缺口）；`examples/` 未进 manifest/setup/CI（故意不分发，代价是无机器防腐）。
+- 原生接管的：durable-test-collateral（5 用例封顶）、git 规则（`git rm` 删 30+ 文件零事故）、create-skill（skill-builder 已删）、taste（design-maker 已改走）、grill/plan（psb/dev-planner 已改指）。
+- 工具自发现：首扫全仓报 `FEEDBACK-INDEX.md:4` 误报（行内代码里的格式示例）→ 加 CODE_SPAN 剥离 + 第 5 个用例→复扫 clean（dogfood 闭环证据）。
+- 长出的规则候选（未采纳）：① S 级直推必须写一行判档理由；② 单会话无第二方时评审替代声明制；③ `examples/` 产品自带一行运行命令 + 退役条件（本工具：连续两季无人跑则删目录）。
 
 ## Risks
 

@@ -1,6 +1,8 @@
 #!/bin/bash
 # tier.sh — 工程档位状态（fast/standard/strict）最小实现。
-# 语义见 docs/LARGE-REPO.md §7：fast 必带 reason、8h 硬上限、到期自回；改家底自动 strict。
+# 出处：本仓自写。
+# 退役条件：人工档位连续两季无人设置（tier.json 从未出现）则删。
+# 语义见 docs/LARGE-REPO.md §7：fast 必带 reason、8h 硬上限、到期自回；改家底建议 strict（显示规则，无机器强制）。
 # 用法：bash scripts/tier.sh on [hours] [reason]|off|status
 #   on:   进 fast（hours 默认 8，上限 8；reason 必填，无 reason 拒绝）
 #   off:  回 standard（需 reason？否：回落是安全方向，直接回）

@@ -1,5 +1,7 @@
 #!/bin/bash
 # sync-check.sh — 三文件同步检查（three-file-sync 的可执行版，可作 Muse Stop hook 命令）。
+# 出处：本仓自写。
+# 退役条件：三文件连续两季零漂移则删（或并入 check.sh）。
 # 规则：工作树有未提交代码改动但 progress.md 没动 → 提醒记账；
 #   REQ 脏了 → 提醒检查 §变更记录 是否追加。
 # 用法：bash scripts/sync-check.sh [--help]

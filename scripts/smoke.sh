@@ -1,5 +1,7 @@
 #!/bin/bash
 # smoke.sh — 最小冒烟验证（零依赖，仅 bash + coreutils）
+# 出处：本仓自写。
+# 退役条件：安装器与 CI 不再消费时删（它是存在性探针，无消费者即死）。
 # 用法：bash scripts/smoke.sh（仓根执行）。退出码 0=全绿，非0=有 FAIL。
 set -euo pipefail
 
@@ -18,7 +20,7 @@ for f in AGENTS.md ARCHITECTURE.md HARNESS.md README.md \
   if [ -f "$f" ]; then ok "exists $f"; else bad "missing $f"; fi
 done
 
-# 1b. 扩展必备文件（2026-09-19 追加，只增不减）
+# 1b. 扩展必备文件（增减须有理由并同步台账，禁止静默删）
 for f in scripts/verify.sh scripts/check.sh scripts/fitness.sh scripts/arch-check.sh \
          scripts/install-githooks.sh scripts/manifest.sh setup.sh setup.ps1 .gitignore \
          FRAMEWORK-MANIFEST.json tests/test_contract.py \
@@ -30,7 +32,7 @@ for f in scripts/verify.sh scripts/check.sh scripts/fitness.sh scripts/arch-chec
   if [ -f "$f" ]; then ok "exists $f"; else bad "missing $f"; fi
 done
 
-# 1c. skill 全量必备文件（2026-09-19 追加，只增不减）
+# 1c. skill 必备文件（增减须有理由并同步 SPEC §7，禁止静默删）
 for f in scripts/skill-lint.sh docs/PLAN_TEMPLATE.md docs/UI-QUALITY-FLOOR.md \
          docs/DESIGN_VOCABULARY.md .agents/rules/domain-rulings.md \
          .agents/feedback/FEEDBACK-INDEX.md \
@@ -40,7 +42,7 @@ for f in scripts/skill-lint.sh docs/PLAN_TEMPLATE.md docs/UI-QUALITY-FLOOR.md \
 done
 for s in product-spec-builder arch-designer dfx-designer design-brief-builder design-maker \
          dev-planner dev-builder bug-fixer code-review test-builder red-blue-review \
-         release-builder branch-finisher large-repo-harness skill-builder feedback-writer \
+         release-builder branch-finisher large-repo-harness feedback-writer \
          evolution-engine progress-recorder domain-rulings; do
   if [ -f ".agents/skills/$s/SKILL.md" ]; then ok "skill $s"; else bad "missing skill $s"; fi
 done
@@ -56,8 +58,8 @@ for s in scripts/*.sh setup.sh .agents/skills/*/scripts/*.sh; do
   if bash -n "$s"; then ok "bash -n $s"; else bad "syntax $s"; fi
 done
 
-# 4. 目录结构（impl-core 的 src/tests/docs/adr 不可删）
-for d in src tests docs/adr scripts .agents/skills .agents/memory .agents/workflows; do
+# 4. 目录结构（tests/docs/adr 等不可删；本仓无 src，见 README 定位）
+for d in tests docs/adr scripts .agents/skills .agents/memory .agents/workflows; do
   if [ -d "$d" ]; then ok "dir $d"; else bad "missing dir $d"; fi
 done
 

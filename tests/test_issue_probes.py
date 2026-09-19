@@ -37,8 +37,7 @@ class TestInstallerContract(unittest.TestCase):
             self.assertNotIn("update=", r.stdout)
             for p in [".agents/rules/domain-rulings.md",
                       ".agents/feedback/FEEDBACK-INDEX.md",
-                      ".agents/feedback/templates/feedback-topic-template.md",
-                      ".agents/agents/implementer.md"]:
+                      ".agents/feedback/templates/feedback-topic-template.md"]:
                 self.assertTrue(os.path.isfile(os.path.join(target, p)), msg=p)
             s = run(["bash", "scripts/smoke.sh"], cwd=target)
             self.assertEqual(s.returncode, 0, msg=s.stdout + s.stderr[-2000:])

@@ -14,8 +14,8 @@ description: 当 Design Brief 完成后、用户需要生成可交互设计稿�
 
 1. 依赖检测：Brief 必需；视觉 token 缺失则临时抽一组并标"未经视觉基线"，建议回补。
 2. 两遍法第一遍：写设计计划（token 摘录、每页线框与对齐、首屏特征、大胆一处、动效一处、组件复用）。
-3. 两遍法第二遍：对照 AI 通病清单与 Don'ts 自审——凡"给任何同类页面都会给的默认"就改，并写"原本→改成→为什么"。
-4. 生成：单文件 index.html（CSS/JS 内联，零外部依赖，字体系统栈回退）；真实业务文案与样本数据，不用 Lorem；token 外不许散写 hex；八态逐页覆盖；`docs/UI-QUALITY-FLOOR.md` 的 MUST 不宣告地做到；`docs/DESIGN_VOCABULARY.md` 通病清单逐条对照，命中的说出改了什么。
+3. 两遍法第二遍：先过原生 taste（AI 味否决清单），再对照 Brief 的 Don'ts 自审——凡"给任何同类页面都会给的默认"就改，并写"原本→改成→为什么"。
+4. 生成：单文件 index.html（CSS/JS 内联，零外部依赖，字体系统栈回退）；真实业务文案与样本数据，不用 Lorem；token 外不许散写 hex；八态逐页覆盖；`docs/UI-QUALITY-FLOOR.md` 的 MUST 不宣告地做到；`docs/DESIGN_VOCABULARY.md` 作 taste 之外的扩展对照（命中的说出改了什么）。
 5. 客观验收（逐条跑，不凭看）：`</html>` 完整收尾、无 CDN 字样、页面覆盖 grep、八态文案 grep、hex 值全在 token 内、390px 无横向滚动、Tab 走主流程。
 6. 方向样张（如需）：先用三版完整人格样张让用户选定方向再出全稿；同一失败两轮无新证据则停下报阻塞。
 7. 交付：落盘 `demo/`；编码参照分两层——业务规则/权限/数据以 Spec → Brief 为准，demo 不得覆盖；布局与交互细节参照 demo → token。两层冲突时 Spec 赢，并把 demo 缺口写进报告已知缺口。

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # gate-audit.sh — 只读诊断：汇总所有门禁的真实拦截战绩
 # 来源：cc-base/.claude/scripts/gate-audit.sh（注册源与账本路径适配本仓）
+# 退役条件：连续两季审计零发现（从没标出过死闸）则删。
 #
 # 本仓写账本的门禁（verify.sh 的 gate_log），拦截账本 gate-block.log 落
 # .agents/harness-state/（主仓 + 各 worktree 各一份）。本脚本把它们全找出来，

@@ -1,6 +1,7 @@
 #!/bin/bash
 # shell-guard.sh — shell 命令危险分级（deny/prompt/allow + 规则解释）。
 # 规则来源：codex safety.rules（kill/shutdown/format/pipe/find/xargs/git/rm/chmod/dd/secret 全表）
+# 退役条件：Muse 审批/沙箱覆盖同等拦截且实测通过时删。
 #   + cc secret-exfil-guard（R1-R4 密钥读/复制/外发）+ dangerous-pkill。
 # 用法：bash scripts/shell-guard.sh "<command>" [--explain]
 # 退出码：0 allow / 1 deny / 3 prompt（需人看）/ 2 用法错。

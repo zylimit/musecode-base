@@ -1,5 +1,7 @@
 #!/bin/bash
 # session-recap.sh — 从 progress.md 派生预算内摘要（Pinned + Decisions 现存 + 待办 + 断点）。
+# 出处：本仓自写。
+# 退役条件：主 Agent 连续一季不消费其输出则删（以真实调用为准）。
 # 用途：/recap 恢复、压缩后回注、交接。只读 progress.md 与 REQ CHANGELOG，不读归档。
 # 用法：bash scripts/session-recap.sh [--max-lines N] [--help]
 # 退出码：0 / 2 用法错。

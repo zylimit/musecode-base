@@ -1,5 +1,7 @@
 #!/bin/bash
 # manifest.sh — 框架清单生成/校验（LF 归一 SHA-256；清单自身不列入，避免自指）。
+# 出处：本仓自写；方法来源见 docs/CROSS-POLLINATION.md（H10/X10）。
+# 退役条件：安装器退役时同步删。
 # 用法：bash scripts/manifest.sh --write|--check [--help]
 # 退出码：0 一致/写成功 / 1 漂移 / 2 用法错或工具缺。
 set -uo pipefail
@@ -24,7 +26,7 @@ MANIFEST="FRAMEWORK-MANIFEST.json"
 list_files() {
   # 恒用 find，不用 git ls-files：unborn 空仓、部分暂存、未跟踪新文件三种情况下 git 口径都会漏文件；
   # manifest 要的是“工作树里有什么”，新文件必须迫使 --write 重审。
-  find AGENTS.md ARCHITECTURE.md HARNESS.md README.md SCALING.md docs scripts src tests .agents .muse setup.sh setup.ps1 .gitignore -type f 2>/dev/null \
+  find AGENTS.md ARCHITECTURE.md HARNESS.md README.md SCALING.md docs scripts tests .agents .muse setup.sh setup.ps1 .gitignore -type f 2>/dev/null \
     | grep -vE "^FRAMEWORK-MANIFEST.json$|harness-state/|\.framework-new$|\.bak$|/evidence/|__pycache__|\.pyc$|\.pytest_cache|/\.git/|node_modules|\.DS_Store|\.mypy_cache|\.ruff_cache" | LC_ALL=C sort -u
 }
 gen() {

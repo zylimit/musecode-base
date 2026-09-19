@@ -22,7 +22,7 @@
 | 每次改码后（手动 L0） | `bash scripts/smoke.sh` | 任一 FAIL | 否：先修再交 |
 | `git commit`（pre-commit） | smoke + `fitness.sh --staged --paths <staged>`（查 index 字节） | FAIL/error | 否（禁 `--no-verify`，见 `AGENTS.md` §5） |
 | `git push`（pre-push） | smoke + `verify.sh` | FAIL/BLOCKED | 否 |
-| CI | smoke + verify + `check.sh` + `arch-check.sh --gate`（有 catalog 时） | 同上 | 否 |
+| CI | smoke + verify + `check.sh` + `skill-lint.sh`（predev/plan/arch 本仓无对象，不接） | 同上 | 否 |
 
 安装：`bash scripts/install-githooks.sh on|off|status`。`off` 只删带 `musecode-base managed hook` 标记的钩子，用户自有钩子不动；不碰 `core.hooksPath`。
 
@@ -55,7 +55,7 @@ fast 下门照跑、红照报、只记账不拦；`release` 装配在 fast 生�
   run: bash scripts/check.sh
 - name: arch gate
   run: bash scripts/arch-check.sh --gate
-  # 无 catalog 时 rc=3：工作流里判 "3=跳过（不是通过）"
+  # 只在有 catalog 且有 src/ 文件时接线；无对象不接（EMPTY_SCAN 会响亮失败，不静默绿）
 ```
 
 CI 门必须挂**自己的测试命令**，不能只看 `muse exec` 退出码（exit 0 只表轮次结束，不表活干得对，见 `docs/MUSE-NATIVE.md` §8）。

@@ -1,6 +1,7 @@
 #!/bin/bash
 # skill-lint.sh — skill 发现元数据检查（frontmatter name/description 契约）。
 # 来源：codex-base skill-builder/scripts/skill-description-lint.sh（路径适配本仓）。
+# 退役条件：`muse skills validate` 覆盖本仓结构要求时缩为 SPEC 行检查；全覆盖则删。
 # 用法：bash scripts/skill-lint.sh
 # 退出码：0 通过 / 1 有违规 / 2 用法错或 python3 缺。
 set -uo pipefail

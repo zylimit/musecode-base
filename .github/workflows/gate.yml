@@ -23,18 +23,11 @@ jobs:
         run: bash scripts/verify.sh
       - name: req-adr check
         run: bash scripts/check.sh
-      - name: predev lint
-        run: node scripts/predev-lint.mjs
-      - name: plan lint
-        run: bash scripts/plan-lint.sh
       - name: skill lint
         run: bash scripts/skill-lint.sh
-      - name: arch gate
-        run: |
-          rc=0
-          bash scripts/arch-check.sh --gate || rc=$?
-          if [ "$rc" -eq 3 ]; then echo "arch: no catalog (skipped, not passed)"; exit 0; fi
-          exit "$rc"
+      # 不在 CI 跑的闸（本仓无守的对象，有对象时再接回）：
+      # predev-lint（无 REQ/BRIEF/DESIGN/ARCH/DFX 文档）、plan-lint（无 PLAN）、
+      # arch --gate（无 src、无 catalog，接回即受 EMPTY_SCAN 约束）。
 
   windows:
     runs-on: windows-latest

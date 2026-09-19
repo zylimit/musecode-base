@@ -75,11 +75,11 @@
 
 - [ ] codex `tests/*.test.mjs` 断言级吸收（突变测试、execpolicy 向量、installer 黑盒）→ 待第二轮精读。
 - [ ] cc `docs/guide` 剩余 12 章 + `docs/agent-notes/*` + `docs/v3-*.md` → 待第二轮精读。
-- [ ] `scripts/gate-audit.sh`（C5 死闸审计）与 `scripts/state-prune.sh`（X13 保留销毁）未实现。
+- [x] `scripts/gate-audit.sh`（C5 死闸审计）与 `scripts/state-prune.sh`（X13 保留销毁）已落地（旧"未实现"已更正）。
 - [ ] `scripts/check.sh` 的 predev-lint 全量子集（C8 仅落地占位符/缺段/待定三规则）。
 - [ ] Muse 官方 `interactive`/`session-messaging`/`rewind`/`auth` 页正文未抓（见 `docs/MUSE-NATIVE.md` §10）。
 - [x] skill 支撑文件：30+ 文件已整件收录 + 5 处供体专用适配 + 12 张主入口路由表（见 §6）。方法实际采用效果待真实任务观察。
-- [ ] `design-maker` 的 UI 审计脚本（`ui-audit.mjs` 等价物）未实现；`red-blue-review` 证据脚本已落地最小版。
+- [x] UI 审计脚本已删（`ui-audit.mjs`/`ui-slop-scan.mjs` 整件搬运但无调用方、无测试、本仓无 UI；design-maker 通病检查改走原生 `taste`）；`red-blue-review` 证据脚本已落地最小版。
 
 ## 6. Skill 吸收台账（2026-09-19 精读蒸馏 + 整改轮同步）
 
@@ -101,7 +101,7 @@ donor 并集 19 个 skill，主入口 SKILL.md 19/19 已落地；references 30+ 
 | release-builder | √ | 1 件整件 | √ 参考节 1 条 | 通用方法原样保留 |
 | branch-finisher | √ | —（无） | — | — |
 | large-repo-harness | √ | —（无） | — | catalog 示例在 `.agents/harness/` |
-| skill-builder | √ | 1 件整件 | √ 参考节 1 条 | description-lint→`scripts/skill-lint.sh` |
+| skill-builder | —（已删） | —（随删） | — | 原生 `create-skill` 全覆盖；项目残余并入 SKILLS_SPEC §6；`scripts/skill-lint.sh` 保留 |
 | feedback-writer | √ | —（无） | — | feedback 双模板→`.agents/feedback/` |
 | evolution-engine | √ | 1 件整件 | √ 参考节 1 条 | 通用方法原样保留 |
 | progress-recorder | √ | —（无） | — | — |

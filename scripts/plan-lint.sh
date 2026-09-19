@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # plan-lint.sh — 开发计划静态质量门（把 dev-planner 的规则自动化）。
 # 来源：cc-base/.claude/scripts/plan-lint.sh（ID 口径与路径适配本仓）。
+# 退役条件：PLAN 模板停用时删。
 # 用法： bash scripts/plan-lint.sh [plan] [spec...]
 #   无参数：PLAN 取 docs/PLAN-*.md 首个，SPEC 取全部 docs/REQ-*.md；缺谁跳过谁。
 # 退出码：0 通过/跳过 / 1 有失败 / 2 用法错。

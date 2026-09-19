@@ -12,7 +12,6 @@
 | 派单包 | 七字段（Goal/Scope/Out-of-Scope/Existing-Pattern/Business-Context/Verification/Escalation） |
 | 交接信封 | 九段回执（Status/Changed/Verified/Not-verified/Needs-review-by/Evidence/假设/反例/口径发现） |
 | skill | 可复用能力（`.agents/skills/<id>/SKILL.md`），slash 调用或派单引用 |
-| 角色卡 | 派单角色定义（`.agents/agents/*.md`），配 skill 与回执格式 |
 | 门禁链 | smoke → verify → check（+ arch-check / predev-lint / plan-lint 按需） |
 | 四态 | PASS / FAIL / BLOCKED / SKIPPED；空计划 = BLOCKED |
 | 降级 rc=3 | 什么都没建立的结论，永不读作绿 |

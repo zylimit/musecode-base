@@ -21,7 +21,7 @@ bash scripts/smoke.sh
 | 1c | skill 全量文件（19 skills + skill-lint + 计划模板 + 地板/词汇 + 口径 canon + feedback 模板/索引 + 证据脚本） | 同上 |
 | 2 | 模板非空 | 模板被清空，恢复内容 |
 | 3 | `bash -n scripts/*.sh` | 门禁脚本自身语法错，先修脚本 |
-| 4 | 目录结构（src/tests/docs/adr/scripts/.agents/skills/.agents/memory/.agents/workflows） | 有目录被删，恢复 |
+| 4 | 目录结构（tests/docs/adr/scripts/.agents/skills/.agents/memory/.agents/workflows；本仓无 src） | 有目录被删，恢复 |
 | 5 | python3/bash 可用 | 环境缺解释器，安装后重跑 |
 | 6 | 泄露初检（`.secrets` 不存在 + 私钥/云密钥/token 正则无命中） | 疑似密钥落仓：删密钥、轮换、查历史；误报则白名单化该行而非删检查 |
 | 7 | `smoke.sh` 可执行位 | 跑 `chmod +x scripts/smoke.sh` |

@@ -1,5 +1,7 @@
 #!/bin/bash
 # state-prune.sh — 运行态保留与销毁（默认 dry-run，只报告；--apply 才动手）。
+# 出处：本仓自写；方法来源见 docs/CROSS-POLLINATION.md（X13）。
+# 退役条件：运行态目录一年无超限/残留则删（改人工看）。
 # 策略见 docs/MEMORY_GUIDE.md §5：gate-block.log 留 2000 行、test-ledger.jsonl 留 5000 行、
 # harness-state 总量超 50MB 告警、evidence 超 30 天列出；活动 task 引用的 evidence 永不删。
 # 用法：bash scripts/state-prune.sh [--apply] [--help]

@@ -1,5 +1,7 @@
 #!/bin/bash
 # gen-exclusions.sh — 校验三处 SKIP 口径与 exclusions.json 一致（防手写漂移）。
+# 出处：本仓自写。
+# 退役条件：setup/manifest 任一退役时同步删。
 # 用法：bash scripts/gen-exclusions.sh --check [--help]
 # 退出码：0 一致 / 1 漂移 / 2 用法错。
 set -uo pipefail

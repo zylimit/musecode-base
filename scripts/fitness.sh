@@ -1,5 +1,7 @@
 #!/bin/bash
 # fitness.sh — 五性反模式扫描（规则语义对齐 codex fitness.mjs；零依赖 grep 版）。
+# 出处：本仓自写（grep 重实现，非代码拷贝）；方法来源见 docs/CROSS-POLLINATION.md（X12）。
+# 退役条件：规则连续两季零命中且无新规则需求时缩为 secret 一条；仍零命中则删。
 # 规则：no-secret-literal(error) / no-pii-in-logs(error) / no-silent-failure(error) /
 #       no-unbounded-retry(warning) / todo-without-owner(warning)。
 # 用法：bash scripts/fitness.sh [--all] [--staged] [--paths a,b] [--help]

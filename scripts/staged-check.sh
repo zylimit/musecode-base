@@ -1,5 +1,7 @@
 #!/bin/bash
 # staged-check.sh — 暂存区分栈语法检查（pre-commit 调用；也可手动跑）。
+# 出处：本仓自写。
+# 退役条件：pre-commit 改直调各栈工具时删。
 # 规则：py 只拦 SyntaxError（缩进/语法），其余告警；js/mjs/cjs/ts 用 node --check；
 #   sh 用 bash -n；只读 git index 字节（git show :path），不读工作树。
 # 用法：bash scripts/staged-check.sh [--help]

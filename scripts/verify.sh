@@ -1,5 +1,7 @@
 #!/bin/bash
 # verify.sh — H4 验证门禁：smoke → 按栈 lint → 触及面测试（探测式，不硬依赖）。
+# 出处：本仓自写；方法来源见 docs/CROSS-POLLINATION.md（H4/X11）。
+# 退役条件：CI 不再消费时删（它是聚合器，无消费者即死）。
 # 用法：bash scripts/verify.sh [--base REV] [--all] [--help]
 #   --base REV  触及面 diff 基线（默认 HEAD；非 git 仓则退化为全量静态检查）
 #   --all       忽略触及面，全量跑（慢）
@@ -65,7 +67,7 @@ else skipped "no scripts/*.sh"; fi
 # 2. python 栈
 if touches '\.py$' || [ -f pytest.ini ] || [ -f pyproject.toml ] || ls tests/test_*.py >/dev/null 2>&1; then
   if command -v ruff >/dev/null 2>&1; then
-    if ruff check src tests scripts 2>/tmp/verify_ruff.log; then pass "ruff check"; else fail "ruff check (see /tmp/verify_ruff.log)"; fi
+    if ruff check tests scripts 2>/tmp/verify_ruff.log; then pass "ruff check"; else fail "ruff check (see /tmp/verify_ruff.log)"; fi
   elif touches '\.py$'; then
     ok=1; while IFS= read -r f; do [ -n "$f" ] || continue
       python3 -m py_compile "$f" 2>/dev/null || { fail "py_compile $f"; ok=0; }
@@ -104,6 +106,11 @@ else skipped "node stack untouched"; fi
 if [ -x scripts/fitness.sh ]; then
   if bash scripts/fitness.sh 2>/tmp/verify_fitness.log; then pass "fitness.sh"; else fail "fitness.sh (see /tmp/verify_fitness.log)"; fi
 else skipped "scripts/fitness.sh absent"; fi
+
+# 5. 排除口径一致（只在相关文件变动时跑，避免死检查）
+if touches '(^setup\.sh$|^setup\.ps1$|manifest\.sh|exclusions\.json)$'; then
+  if bash scripts/gen-exclusions.sh --check >/tmp/verify_exclusions.log 2>&1; then pass "gen-exclusions --check"; else fail "gen-exclusions (see /tmp/verify_exclusions.log)"; fi
+else skipped "exclusions untouched"; fi
 
 echo "---"
 echo "verify: PASS=$PASS FAIL=$FAIL BLOCKED=$BLOCKED SKIPPED=$SKIPPED"

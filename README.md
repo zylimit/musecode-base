@@ -1,10 +1,10 @@
 # musecode-base
 
-AI 编程 CLI 核心脚手架（Muse Code 基座）。
+给 Muse Code 用的可复用工程脚手架：skills + 门禁脚本 + 文档模板，随仓分发、按需裁剪。
 
 ## 定位
 
-- 面向工程任务的 agentic CLI：读仓、改码、验证、交付。
+- 本仓是脚手架，不是运行时：会话/调度/沙箱/记忆运行时归 Muse 本体，本仓只给可复用的工程纪律与检查工具。
 - 约定优先于配置：代理行为以 `AGENTS.md` 为准，架构红线以 `ARCHITECTURE.md` 为准。
 - 可复用 harness 能力见 `HARNESS.md`（注明 codex / cc 出处）。
 
@@ -22,8 +22,7 @@ AI 编程 CLI 核心脚手架（Muse Code 基座）。
 | `docs/CROSS-POLLINATION.md` | codex/cc 吸收台账与拒绝清单 |
 | `docs/MEMORY_GUIDE.md` | 四记忆系统分工与保留销毁 |
 | `docs/QUALITY_CHECKLIST.md` | 五维质检（Resilience/Security/Safety/Privacy/Reliability） |
-| `src/` | 产品代码 |
-| `tests/` | 与 `src` 同构的测试 + 脚手架契约测试 |
+| `tests/` | 脚手架契约测试 + 行为探针 |
 | `scripts/` | 本地校验与运维脚本（smoke/verify/check/fitness/arch-check） |
 | `.agents/skills/` | 项目技能（官方路径，见 SKILLS_SPEC） |
 | `.agents/memory/` | 项目记忆（`MEMORY.md` 索引） |

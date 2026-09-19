@@ -1,5 +1,7 @@
 #!/bin/bash
 # session-start.sh — 开工检查（项目阶段检测 + 档位 + 损坏 + 待处理反馈 + 脏树提醒）。
+# 出处：本仓自写。
+# 退役条件：主 Agent 连续一季不消费其输出则删（以真实调用为准）。
 # 用法：bash scripts/session-start.sh [--help]
 # 退出码恒 0（只读报告）。建议：新会话开工先跑一次；可作 Muse SessionStart hook 命令。
 set -uo pipefail

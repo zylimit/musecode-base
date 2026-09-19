@@ -1,4 +1,5 @@
 # 来源：codex-base/.codex/runtime/lib/python-imports.py（整件收录）
+# 退役条件：arch-check 退役或改其他解析时同步删。
 """Bounded AST extraction only. Never import or execute project modules."""
 
 import ast

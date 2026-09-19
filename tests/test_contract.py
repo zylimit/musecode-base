@@ -55,21 +55,8 @@ class TestScaffoldContract(unittest.TestCase):
         r = run(["bash", "scripts/skill-lint.sh"])
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
-    def test_skill_count(self):
-        base = os.path.join(ROOT, ".agents", "skills")
-        skills = [e for e in os.listdir(base)
-                  if os.path.isdir(os.path.join(base, e)) and not e.startswith("_")]
-        self.assertEqual(len(skills), 19, msg=sorted(skills))
-        for e in skills:
-            text = open(os.path.join(base, e, "SKILL.md"), encoding="utf-8").read()
-            self.assertIn("## Donor 出处", text, msg=e)
-
-    def test_adopted_docs_present(self):
-        for p in ["docs/UI-QUALITY-FLOOR.md", "docs/DESIGN_VOCABULARY.md",
-                  ".agents/rules/domain-rulings.md",
-                  ".agents/feedback/FEEDBACK-INDEX.md",
-                  ".agents/skills/red-blue-review/scripts/evidence.sh"]:
-            self.assertTrue(os.path.isfile(os.path.join(ROOT, p)), msg=p)
+    # 已删：test_skill_count（锁死数量会惩罚正确删除）、test_adopted_docs_present
+    # （存在性已有 smoke 覆盖，安装完整性已有 test_issue_probes 行为覆盖）。
 
     def test_no_forbidden_skills_path(self):
         # ADR-0001: .muse/skills must never be reborn.
@@ -101,30 +88,8 @@ class TestScaffoldContract(unittest.TestCase):
         r = run(["bash", "scripts/manifest.sh", "--check"])
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
-    def test_ci_arch_gate_tolerates_rc3(self):
-        # gate.yml runs steps under `bash -e`: the arch-gate block must swallow
-        # rc=3 (no catalog) itself instead of tripping errexit. Execute the real
-        # block from the workflow file.
-        text = open(os.path.join(ROOT, ".github", "workflows", "gate.yml"),
-                     encoding="utf-8").read().splitlines()
-        try:
-            i = next(n for n, l in enumerate(text) if "name: arch gate" in l)
-            j = next(n for n in range(i, len(text)) if text[n].strip() == "run: |")
-        except StopIteration:
-            self.fail("arch gate run block not found in gate.yml")
-        body = []
-        for line in text[j + 1:]:
-            if line.strip().startswith("- ") or (line and not line[0].isspace()):
-                break
-            body.append(line)
-        self.assertTrue(body, msg="empty arch gate block")
-        indent = min(len(l) - len(l.lstrip()) for l in body if l.strip())
-        script = "\n".join(l[indent:] for l in body)
-        r = run(["bash", "-e", "-c", script])
-        self.assertEqual(r.returncode, 0, msg=script + "\n" + r.stdout + r.stderr)
-
     def test_predev_lint_clean_on_repo(self):
-        # CI gate.yml runs predev-lint on repo root: framework guides must not
+        # pytest runs predev-lint on repo root: framework guides must not
         # collide with the REQ-/DESIGN-/ARCH-/DFX- artifact namespaces.
         import shutil as _shutil
         if _shutil.which("node") is None:

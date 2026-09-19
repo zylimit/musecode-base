@@ -52,38 +52,41 @@
 ## 5. 质量门槛
 
 - 新增技能必须：`bash -n` 过（若含脚本）、被 `scripts/smoke.sh` 存在性检查覆盖、写一条验收命令。
-- 技能间不循环依赖；通用逻辑上浮到 `src/`，技能只做编排。
+- 技能间不循环依赖；通用逻辑上浮到 `scripts/`（本仓无 `src/`），技能只做编排。
 
-## 6. 合入流程
+## 6. 合入流程（创建机制归原生，本节只留本仓约定）
 
-1. 复制 `_template/SKILL.md` 到新目录并填写。
-2. 跑 `bash scripts/smoke.sh` 确认存在性检查通过。
-3. 有架构影响则补 ADR（`docs/adr/NNNN-<slug>.md`）。
-4. 在交付说明中贴技能路径 + 验收命令输出。
+创建 skill 的机制（scope/安全位/校验）走原生 `create-skill`（用户显式要求建 skill 时触发），不要自写第二套。本仓只加三条项目约定：
 
-## 7. 现有技能索引
+1. 结构按 §3（版本/适用/输入/输出/步骤≤7/约束/验收/示例）填 `_template/SKILL.md` 骨架；description 只写触发条件。
+2. 大改先做新旧对照：2–3 个代表性场景，只给当轮输入不预给期望；只有原版真失败且改版同断言通过才称改进。
+3. 落盘后跑 `bash scripts/smoke.sh` + `bash scripts/skill-lint.sh`，SPEC §7 加索引行；有架构影响补 ADR；在交付说明中贴技能路径 + 验收命令输出。
 
-| 技能 | 说明 | 状态 |
-|---|---|---|
-| `_template` | 模板，非可执行技能 | 常驻 |
-| `product-spec-builder` | 需求访谈四线/五铁律/四把刀 + 复述签字 + 迭代 CHANGELOG | 可用 |
-| `arch-designer` | S/M/L + 事件检验边界 + 质量场景比较 + ADR 九字段 | 可用 |
-| `dfx-designer` | 损失推导 + 13 维定档 + 测量语义 + 威胁/预算表 | 可用 |
-| `design-brief-builder` | 形态识别 + 感受翻译 + 二选一 + 双产物 | 可用 |
-| `design-maker` | 两遍法 + 单文件离线稿 + 客观验收 | 可用 |
-| `dev-planner` | 价值排序切片 + 验收反推 + spike + 并行 disjoint | 可用 |
-| `dev-builder` | TDD + 最小改动 + Phase 门禁链 + 收口扫描 | 可用 |
-| `bug-fixer` | 稳定复现 + 区分实验 + 红锁 + 三次熔断 | 可用 |
-| `code-review` | 三阶段九 lens + 删除单列 + 作者≠评审 | 可用 |
-| `test-builder` | 风险分级 + 独立预期 + 老化纪律 + 门禁接入 | 可用 |
-| `red-blue-review` | Blue 自证→Red 四 lens→Judge 三态 + 证据包脚本 | 可用 |
-| `release-builder` | 四要素 + 隐私审计 + 部署三件套 + 产物四环节 | 可用 |
-| `branch-finisher` | 三类环境 + 测试闸 + 条件菜单 + baseline 对照 | 可用 |
-| `large-repo-harness` | catalog/影响/预算/定向验证/防腐索引 skill | 可用 |
-| `skill-builder` | 按交互模式参照 + 场景对照 + 来源清单 | 可用 |
-| `feedback-writer` | 五类信号 + 去重 + 效能评分 + pending | 可用 |
-| `evolution-engine` | 毕业/优化/新 skill 三扫描 + 实证门槛（只读） | 可用 |
-| `progress-recorder` | 语义抽取 + 置信闸 + 取代链 + 归档 | 可用 |
-| `domain-rulings` | 四象限分诊 + 入库两问 + 七栏 + 老化 | 可用 |
+## 7. 现有技能索引（三选一判定 + 退役条件）
+
+判定依据：逐个读过 built-in body（`plan`/`grill`/`requirements-clarification`/`taste`/`create-skill`/`git`/`durable-test-collateral` 均已实际加载比对）+ CLI 实测（`skills list/install/import`、`--agents`、plugins 面）。原生 `plan`/`grill`/clarification 均为显式触发（任务本身不触发），这是 ① 少的的结构原因；observer 无可调用面，不能作为覆盖依据。
+
+| 技能 | 判定 | 原生映射/保留理由 | 退役条件 |
+|---|---|---|---|
+| `product-spec-builder` | ②留半 | 通用追问归 `grill`；留 REQ 机器（判档/四标记/收敛+check/复述/CHANGELOG） | REQ 模板+check 闸被原生需求流取代时删 |
+| `arch-designer` | ③留 | `plan` 只管计划形态与审批不管架构方法；留 S/M/L+事实归属+ADR/catalog 接线 | 连续 3 个架构任务无人触发时删 |
+| `dfx-designer` | ③留 | 无原生 SLO/质量目标能力 | 同上（计数对象换 DFX 任务） |
+| `design-brief-builder` | ③留 | `taste` 只管创作时否决不管风格发现；`grill` 不懂视觉轴 | 同上 |
+| `design-maker` | ②留半 | 通病否决归 `taste`；留两遍法/离线稿/客观验收/样张/分层交付 | 同上 |
+| `dev-planner` | ②留半 | 计划形态与审批闸归 `plan`；留切片/反推四问/disjoint+owner/spike/PLAN 落盘 | 同上 |
+| `dev-builder` | ③留 | TDD/Phase 执行法无原生对应（`durable-test-collateral` 仅一条规则） | 本仓改用其他实现流程时删 |
+| `bug-fixer` | ③留 | 调试执行法无原生对应（`plan` 的 debug 型只是计划形态） | 同上 |
+| `code-review` | ③留 | 无原生评审 skill；observer 不可调用不作数 | 同上 |
+| `test-builder` | ③留 | 全套测试方法无原生对应 | 同上 |
+| `red-blue-review` | ③留 | 对抗仪式+evidence.sh，与 code-review 触发不同 | 一年无发版前对抗审查时删 |
+| `release-builder` | ③留 | 无原生发布能力 | 同上（计数对象换发布任务） |
+| `branch-finisher` | ③留 | 内置 `git` 只管安全规则不管收尾流程 | 同上（计数对象换收尾任务） |
+| `large-repo-harness` | ③留 | 无原生对应 | 连续 3 个大仓任务无人触发时删，留 LARGE-REPO.md |
+| `feedback-writer` | ③留 | 无原生教训采集能力；动词已按平台改为补丁式回执 | 有原生 lesson 采集时删 |
+| `evolution-engine` | ③留 | 只读提议（恰为本平台答案形态）；输入是读操作 | feedback 为空满一季时删 |
+| `progress-recorder` | ③留 | 写 progress.md（仓根可写区）；原生 memory 是另一系统 | progress.md 停用时删 |
+| `domain-rulings` | ③留 | 无原生口径库能力；写 domain/（仓根可写区） | 口径库空满一季时删 |
+
+已删：`skill-builder`（①，原生 `create-skill` 全覆盖机制；项目残余并入 §6）。
 
 > 新增行即注册，无需中心清单文件。

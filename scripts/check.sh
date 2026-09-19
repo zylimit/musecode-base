@@ -1,5 +1,7 @@
 #!/bin/bash
 # check.sh — H5 需求→ADR→交付链检查：REQ 静态闸 + ADR 执法校验 + 三件套存在性。
+# 出处：本仓自写；方法来源见 docs/CROSS-POLLINATION.md（X7/C8）。
+# 退役条件：REQ/ADR 模板停用则删对应段；全段无对象连续两季则删文件。
 # 用法：bash scripts/check.sh [--req FILE] [--help]
 # 退出码：0 全绿 / 2 有 error 级 finding / 3 降级（无 REQ/ADR 可查）/ 1 用法错
 # 规则（error 拦，warn 只报）：PLACEHOLDER / PENDING_IN_REQUIREMENT / NO_SOURCE_MARK /

@@ -1,6 +1,7 @@
 #!/bin/bash
 # install-githooks.sh — 安装/卸载本仓 git hooks（经 core.hooksPath 指向版本化的 scripts/githooks/）。
 # 来源模型：cc-base githooks（版本化单源 + 占用拒绝）。
+# 退役条件：改用原生 hooks 接线时删。
 # 用法：bash scripts/install-githooks.sh on|off|status
 #   on:     core.hooksPath -> scripts/githooks（已有非本仓值则拒绝，不覆盖 husky 等）
 #   off:    仅当 core.hooksPath 指向本仓时才 unset

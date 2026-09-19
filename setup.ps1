@@ -8,8 +8,8 @@ if ($Target -match "\.\.") { throw "target 含 ..：$Target" }
 if ([System.IO.Path]::IsPathRooted($Target)) { $FullTarget = [System.IO.Path]::GetFullPath($Target) }
 else { $FullTarget = [System.IO.Path]::GetFullPath((Join-Path (Get-Location) $Target)) }
 if ($FullTarget -eq $Src) { throw "target 不能是脚手架源码自己" }
-$Payload = @("AGENTS.md","ARCHITECTURE.md","HARNESS.md","README.md","SCALING.md",".gitignore","FRAMEWORK-MANIFEST.json","setup.sh","setup.ps1",".agents/agent-memory/README.md")
-$PayloadDirs = @("docs",".agents/skills",".agents/memory",".agents/workflows",".agents/harness",".agents/rules",".agents/agents",".agents/feedback/templates","scripts","src","tests",".muse")
+$Payload = @("AGENTS.md","ARCHITECTURE.md","HARNESS.md","README.md","SCALING.md",".gitignore","FRAMEWORK-MANIFEST.json","setup.sh","setup.ps1")
+$PayloadDirs = @("docs",".agents/skills",".agents/memory",".agents/workflows",".agents/harness",".agents/rules",".agents/feedback/templates","scripts","tests",".muse")
 $SkipRx = "harness-state/|\.framework-new$|\.bak$|/evidence/|__pycache__|\.pyc$|\.pytest_cache|/\.git/|node_modules|\.DS_Store|\.mypy_cache|\.ruff_cache|module-catalog\.json$|arch-baseline\.json$"
 $FeedbackIndex = ".agents/feedback/FEEDBACK-INDEX.md"
 $files = New-Object System.Collections.Generic.List[string]

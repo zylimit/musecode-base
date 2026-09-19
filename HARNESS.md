@@ -5,18 +5,14 @@
 
 ## 1. 复用清单
 
-| # | 能力 | 说明 | 出处 | 落点（规划） |
+| # | 能力 | 说明 | 出处 | 落点 |
 |---|---|---|---|---|
-| H1 | 会话与日志 | 会话 id、jsonl 落盘、断点续跑 | codex | `scripts/session.sh` / `src/session/` |
-| H2 | 沙箱执行 | 命令分级（只读/可写/高危）、审批与审计 | codex | `scripts/sandbox.sh` |
-| H3 | 工具路由 | 读写/检索/执行三类工具统一调度与超时 | cc | `src/tools/` |
 | H4 | 验证门禁 | lint → 单测 → 触及面包 → 全量的可配置流水线 | cc | `scripts/verify.sh` |
 | H5 | 需求→ADR→交付链 | 模板化需求与决策，交付自动校验 checklist | local | `docs/`, `scripts/check.sh` |
 | H6 | 产物防伪 | 生成文件只由 sanctioned writer 写，手工冒充即失败 | cc | `scripts/verify.sh` |
-| H7 | 降级表达 | 依赖不可达时显式降级输出，不伪装健康 | codex | `src/fallback/` |
 | H8 | 反模式扫描 | 五规则 grep 版 + 行内抑制 | codex+cc | `scripts/fitness.sh` |
 | H9 | 架构防腐 | 声明图 + 实边 + 棘轮，禁边永不可 baseline | codex+cc | `scripts/arch-check.sh` |
-| H10 | 分发与自检 | 安装器 + manifest + 契约测试 | codex+cc | `setup.*`、`manifest.sh`、`tests/` |
+| H10 | 分发与自检 | 安装器 + manifest + 契约测试 | codex+cc | `setup.*`、`manifest.sh`、`tests/`（原生 `skills install` 只收本地单 skill、`import` 只收别家目录、plugin 只带 skills/commands/hooks；多资产分发+sidecar 升级语义无原生覆盖，安装器保留） |
 | H11 | 可复用编排 | 只读 review workflow + code-review skill | cc+muse 原生 | `.agents/workflows/`、`.agents/skills/` |
 
 ## 2. 复用规则
@@ -36,6 +32,7 @@
 
 ## 4. 待补（缺口，见 `docs/CROSS-POLLINATION.md` §5）
 
-- [ ] `scripts/gate-audit.sh`（死闸审计）与 `scripts/state-prune.sh`（保留销毁）。
 - [ ] `check.sh` 的 predev-lint 全量子集（度量数字/预算表/ADR 九字段全校）。
-- [ ] H1 会话目录约定：Muse session 日志由运行时管理，本仓只定 harness-state 子目录规范。
+- [ ] harness-state 子目录规范：Muse session 日志由运行时管理，本仓只定 `.agents/harness-state/` 下的自有文件约定。
+
+> 已删除编号：H1（会话与日志）、H2（沙箱执行）、H3（工具路由）、H7（降级表达）——运行时能力归 Muse 本体，不在本仓实现；编号空缺不重排。

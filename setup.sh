@@ -4,9 +4,10 @@
 # 安装契约（最小）：只创建不修改。目标缺失→create；相同→skip；不同→conflict，
 #   新版本落旁边的 <file>.framework-new（已有 sidecar 永不覆盖）。无 update 语义，
 #   无 staging/backup/rollback：dry-run 零写只出计划。
-# 私产边界：反馈历史/索引、角色战术笔记、本仓 catalog 与基线不分发；
+# 私产边界：反馈历史/索引、本仓 catalog 与基线不分发；
 #   只发公共模板与约定，目标索引缺失时初始化空表头。
 # 退出码：0 成功；1 有复制失败（逐个 ERROR 行报告）；2 用法错。
+# 退役条件：原生分发覆盖多资产（脚本/文档/模板/hooks）+ sidecar 升级语义时删（见 H10 行）。
 set -u
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -29,10 +30,10 @@ esac
 [ "$TARGET" = "$SRC" ] && { echo "setup: target 不能是脚手架源码自己" >&2; exit 1; }
 
 # 分发面（运行态与私产永不进入）
-# 公共：规则/角色/反馈模板/战术笔记约定随框架走；
-# 私有：反馈索引与历史、角色 MEMORY、.example 之外的本仓 catalog/基线不发。
-PAYLOAD="AGENTS.md ARCHITECTURE.md HARNESS.md README.md SCALING.md .gitignore FRAMEWORK-MANIFEST.json setup.sh setup.ps1 .agents/agent-memory/README.md"
-PAYLOAD_DIRS="docs .agents/skills .agents/memory .agents/workflows .agents/harness .agents/rules .agents/agents .agents/feedback/templates scripts src tests .muse"
+# 公共：规则/反馈模板随框架走；
+# 私有：反馈索引与历史、.example 之外的本仓 catalog/基线不发。
+PAYLOAD="AGENTS.md ARCHITECTURE.md HARNESS.md README.md SCALING.md .gitignore FRAMEWORK-MANIFEST.json setup.sh setup.ps1"
+PAYLOAD_DIRS="docs .agents/skills .agents/memory .agents/workflows .agents/harness .agents/rules .agents/feedback/templates scripts tests .muse"
 SKIP_RX='harness-state/|\.framework-new$|\.bak$|/evidence/|__pycache__|\.pyc$|\.pytest_cache|/\.git/|node_modules|\.DS_Store|\.mypy_cache|\.ruff_cache|module-catalog\.json$|arch-baseline\.json$'
 FEEDBACK_INDEX=".agents/feedback/FEEDBACK-INDEX.md"
 

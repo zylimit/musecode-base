@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // predev-lint.mjs — 前期五文档静态门（文档族 glob + 本仓段表/ID 口径适配）
 // 来源：cc-base/.claude/scripts/predev-lint.mjs（规则函数保留，文档映射与段表适配）
+// 退役条件：REQ/DESIGN 文档族停用时删。
 // 原：前期五份文档的静态闸（把 product-spec-builder / design-brief-builder /
 // design-maker / arch-designer / dfx-designer 的模板规则自动化）。
 // 用法： node .claude/scripts/predev-lint.mjs [--root <目录>] [--json]   默认 root 为当前目录

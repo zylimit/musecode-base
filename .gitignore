@@ -2,10 +2,6 @@
 .agents/harness-state/
 .agents/evidence/
 **/.runtime/
-.claude/.needs-review
-.needs-review
-.red-verified
-.tdd-exempt
 *.framework-new
 *.bak
 __pycache__/
