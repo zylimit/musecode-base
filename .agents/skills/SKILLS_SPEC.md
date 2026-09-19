@@ -8,10 +8,10 @@
 ```text
 .agents/skills/
   SKILLS_SPEC.md          # 本文件（规范）
-  _template/SKILL.md      # 新技能模板（复制改名即用）
   <skill-name>/SKILL.md   # 每个技能一个目录，入口固定为 SKILL.md
   <skill-name>/scripts/   # 可选：技能私有脚本（只被该技能引用）
   <skill-name>/references.md  # 可选：背景资料索引（链到 docs/ 或具名外部源）
+.agents/parts/            # 零件库：下架技能 + _template（不装机、不触发，按需取用）
 ```
 
 官方四源对照：Built-in（随包）/ User（`~/.agents/skills` 等）/ Project（本目录）/ Plugin。
@@ -58,35 +58,20 @@
 
 创建 skill 的机制（scope/安全位/校验）走原生 `create-skill`（用户显式要求建 skill 时触发），不要自写第二套。本仓只加三条项目约定：
 
-1. 结构按 §3（版本/适用/输入/输出/步骤≤7/约束/验收/示例）填 `_template/SKILL.md` 骨架；description 只写触发条件。
+1. 结构按 §3（版本/适用/输入/输出/步骤≤7/约束/验收/示例）填 `.agents/parts/_template/SKILL.md` 骨架；description 只写触发条件。
 2. 大改先做新旧对照：2–3 个代表性场景，只给当轮输入不预给期望；只有原版真失败且改版同断言通过才称改进。
 3. 落盘后跑 `bash scripts/smoke.sh` + `bash scripts/skill-lint.sh`，SPEC §7 加索引行；有架构影响补 ADR；在交付说明中贴技能路径 + 验收命令输出。
 
-## 7. 现有技能索引（三选一判定 + 退役条件）
+## 7. 装机技能索引（Fable #2，2026-09-19：只留需求→开发→审查一条线）
 
-判定依据：逐个读过 built-in body（`plan`/`grill`/`requirements-clarification`/`taste`/`create-skill`/`git`/`durable-test-collateral` 均已实际加载比对）+ CLI 实测（`skills list/install/import`、`--agents`、plugins 面）。原生 `plan`/`grill`/clarification 均为显式触发（任务本身不触发），这是 ① 少的的结构原因；observer 无可调用面，不能作为覆盖依据。
+| 技能 | 原生映射/保留理由 | 退役条件 |
+|---|---|---|
+| `product-spec-builder` | 通用追问归 `grill`；留 REQ 机器（判档/四标记/收敛+check/复述/CHANGELOG） | REQ 模板+check 闸被原生需求流取代时删 |
+| `dev-builder` | TDD/Phase 执行法无原生对应（`durable-test-collateral` 仅一条规则） | 本仓改用其他实现流程时删 |
+| `code-review` | 无原生评审 skill；observer 不可调用不作数 | 同上 |
 
-| 技能 | 判定 | 原生映射/保留理由 | 退役条件 |
-|---|---|---|---|
-| `product-spec-builder` | ②留半 | 通用追问归 `grill`；留 REQ 机器（判档/四标记/收敛+check/复述/CHANGELOG） | REQ 模板+check 闸被原生需求流取代时删 |
-| `arch-designer` | ③留 | `plan` 只管计划形态与审批不管架构方法；留 S/M/L+事实归属+ADR/catalog 接线 | 连续 3 个架构任务无人触发时删 |
-| `dfx-designer` | ③留 | 无原生 SLO/质量目标能力 | 同上（计数对象换 DFX 任务） |
-| `design-brief-builder` | ③留 | `taste` 只管创作时否决不管风格发现；`grill` 不懂视觉轴 | 同上 |
-| `design-maker` | ②留半 | 通病否决归 `taste`；留两遍法/离线稿/客观验收/样张/分层交付 | 同上 |
-| `dev-planner` | ②留半 | 计划形态与审批闸归 `plan`；留切片/反推四问/disjoint+owner/spike/PLAN 落盘 | 同上 |
-| `dev-builder` | ③留 | TDD/Phase 执行法无原生对应（`durable-test-collateral` 仅一条规则） | 本仓改用其他实现流程时删 |
-| `bug-fixer` | ③留 | 调试执行法无原生对应（`plan` 的 debug 型只是计划形态） | 同上 |
-| `code-review` | ③留 | 无原生评审 skill；observer 不可调用不作数 | 同上 |
-| `test-builder` | ③留 | 全套测试方法无原生对应 | 同上 |
-| `red-blue-review` | ③留 | 对抗仪式+evidence.sh，与 code-review 触发不同 | 一年无发版前对抗审查时删 |
-| `release-builder` | ③留 | 无原生发布能力 | 同上（计数对象换发布任务） |
-| `branch-finisher` | ③留 | 内置 `git` 只管安全规则不管收尾流程 | 同上（计数对象换收尾任务） |
-| `large-repo-harness` | ③留 | 无原生对应 | 连续 3 个大仓任务无人触发时删，留 LARGE-REPO.md |
-| `feedback-writer` | ③留 | 无原生教训采集能力；动词已按平台改为补丁式回执 | 有原生 lesson 采集时删 |
-| `evolution-engine` | ③留 | 只读提议（恰为本平台答案形态）；输入是读操作 | feedback 为空满一季时删 |
-| `progress-recorder` | ③留 | 写 progress.md（仓根可写区）；原生 memory 是另一系统 | progress.md 停用时删 |
-| `domain-rulings` | ③留 | 无原生口径库能力；写 domain/（仓根可写区） | 口径库空满一季时删 |
+零件库（`.agents/parts/`，不装机、不触发，按需取用；三选一判定原文见 git 历史）：`arch-designer`、`dfx-designer`、`design-brief-builder`、`design-maker`、`dev-planner`、`bug-fixer`、`test-builder`、`red-blue-review`、`release-builder`、`branch-finisher`、`large-repo-harness`、`feedback-writer`、`evolution-engine`、`progress-recorder`、`domain-rulings`、`_template`。
 
-已删：`skill-builder`（①，原生 `create-skill` 全覆盖机制；项目残余并入 §6）。
+已删：`skill-builder`（原生 `create-skill` 全覆盖机制；项目残余并入 §6）。
 
 > 新增行即注册，无需中心清单文件。

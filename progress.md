@@ -49,6 +49,15 @@
 - 工具自发现：首扫全仓报 `FEEDBACK-INDEX.md:4` 误报（行内代码里的格式示例）→ 加 CODE_SPAN 剥离 + 第 5 个用例→复扫 clean（dogfood 闭环证据）。
 - 长出的规则候选（未采纳）：① S 级直推必须写一行判档理由；② 单会话无第二方时评审替代声明制；③ `examples/` 产品自带一行运行命令 + 退役条件（本工具：连续两季无人跑则删目录）。
 
+## 对照（2026-09-19：Fable #1 行为对照，报销需求三连发）
+
+- 命令：`muse exec --workspace /tmp/fable-duizhao --trust-workspace --disable-approval --user-input-auto-resolve --no-foreign-personal-context --max-model-steps 40 --session-id 0c476bf2-… --json "<需求>"`；工作区=本仓 `.agents/` 原样复制，无 AGENTS.md。记录：`/tmp/fable-run{1,2,3}.jsonl`（模型 muse-spark-1.3）。
+- 需求：`内部报销审批工具，员工提交发票、主管审批、财务打款`；续跑 `好` → `好，都按推荐的办`（同 session）。
+- 行为链（run1）：recon → skill-reminder 触发 → `read_skill product-spec-builder`（路径即本仓复制，归因干净）→ 读 `workflow-0-1.md`+`question-bank.md` → `web_search` 查报销流程 → 终态只问 2 个问题（过程走一遍+风险档位），零文件落盘。
+- 五错打分：①不查证断言：未犯（先搜后问，无断言）。②一口气问一串：未犯（2 问）。③推销功能：未犯（"不列功能"；run3 的 OCR/验真只作非推荐重选项出现，推荐=最小版）。④推断当确认：未犯（假设标"推荐/默认"+可纠正，未当事实）。⑤说"好"照单全收：未犯（两次 blanket 好之后仍给实例求纠正+继续单选）。
+- 附带发现：`.agents/skills/_template/SKILL.md` 无 frontmatter，扫描器报 invalid skill package（warn，不影响）。
+- 结论基线：当前 18-skill 版在此句需求上 5/5 未犯。按 Fable 口径，此结果为准，我与 Astra 的文档审查只是补充。另：headless 下 `request_user_input` 自动取消，agent 自适应改文字选择题——交互态行为另测。
+
 ## Risks
 
 - R1：donor 主入口已对齐；30+ 长案例/问题库已整件收录 + 5 处适配 + 12 张路由表（台账 §6，已更正"仅索引"旧说法）。运行面实现（`.codex/runtime`、`.claude/hooks`）未列入；方法实际采用效果待真实任务观察。

@@ -88,7 +88,7 @@ catalog lint → affected/反向依赖闭包 → task baseline → context pack 
 | 密钥外泄/危险删除/发布前置/记忆同步/通知 | block | block | block（floor，不在表内） |
 
 - fast 必带 reason、上限 8h、到期自回默认档；状态 `.agents/harness-state/tier.json`（git 忽略）。档位是建议（人工执行），无机器强制。
-- 改家底（`.agents/skills/**`、`.muse/hooks.json`、`scripts/**`、`AGENTS.md`、`ARCHITECTURE.md`、`docs/**` 规范）本轮建议 strict——只是 `tier.sh status` 的显示规则（raise），提交后回落显示。升档不需批，降档要 reason 并记账（人工记）。
+- 改家底（`.agents/skills/**`、`.agents/parts/**`、`.muse/hooks.json`、`scripts/**`、`AGENTS.md`、`ARCHITECTURE.md`、`docs/**` 规范）本轮建议 strict——只是 `tier.sh status` 的显示规则（raise），提交后回落显示。升档不需批，降档要 reason 并记账（人工记）。
 - 档位只调工程门强度，**不改** Muse approval/sandbox/模型三轴（X1）。
 
 ## 8. 派单契约（多智能体）

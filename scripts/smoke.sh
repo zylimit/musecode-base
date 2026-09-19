@@ -16,7 +16,7 @@ bad()  { FAIL=$((FAIL+1)); echo "FAIL: $1"; }
 for f in AGENTS.md ARCHITECTURE.md HARNESS.md README.md \
          docs/ADR_TEMPLATE.md docs/REQUIREMENTS_TEMPLATE.md \
          docs/HOOKS.md docs/QUALITY_CHECKLIST.md docs/MUSE-NATIVE.md SCALING.md \
-         scripts/SMOKE.md .agents/skills/SKILLS_SPEC.md .agents/skills/_template/SKILL.md; do
+         scripts/SMOKE.md .agents/skills/SKILLS_SPEC.md .agents/parts/_template/SKILL.md; do
   if [ -f "$f" ]; then ok "exists $f"; else bad "missing $f"; fi
 done
 
@@ -37,29 +37,27 @@ for f in scripts/skill-lint.sh docs/PLAN_TEMPLATE.md docs/UI-QUALITY-FLOOR.md \
          docs/DESIGN_VOCABULARY.md .agents/rules/domain-rulings.md \
          .agents/feedback/FEEDBACK-INDEX.md \
          .agents/feedback/templates/feedback-topic-template.md \
-         .agents/skills/red-blue-review/scripts/evidence.sh; do
+         .agents/parts/red-blue-review/scripts/evidence.sh; do
   if [ -f "$f" ]; then ok "exists $f"; else bad "missing $f"; fi
 done
-for s in product-spec-builder arch-designer dfx-designer design-brief-builder design-maker \
-         dev-planner dev-builder bug-fixer code-review test-builder red-blue-review \
-         release-builder branch-finisher large-repo-harness feedback-writer \
-         evolution-engine progress-recorder domain-rulings; do
+# 装机 skill 只有需求→开发→审查一条线（Fable #2，2026-09-19）；余下在 .agents/parts/ 作零件库
+for s in product-spec-builder dev-builder code-review; do
   if [ -f ".agents/skills/$s/SKILL.md" ]; then ok "skill $s"; else bad "missing skill $s"; fi
 done
 
 # 2. 模板非空
-for f in docs/ADR_TEMPLATE.md docs/REQUIREMENTS_TEMPLATE.md docs/PLAN_TEMPLATE.md .agents/skills/_template/SKILL.md .agents/feedback/templates/feedback-topic-template.md; do
+for f in docs/ADR_TEMPLATE.md docs/REQUIREMENTS_TEMPLATE.md docs/PLAN_TEMPLATE.md .agents/parts/_template/SKILL.md .agents/feedback/templates/feedback-topic-template.md; do
   if [ -s "$f" ]; then ok "non-empty $f"; else bad "empty $f"; fi
 done
 
 # 3. shell 语法（scripts/ + 根 setup.sh）
-for s in scripts/*.sh setup.sh .agents/skills/*/scripts/*.sh; do
+for s in scripts/*.sh setup.sh .agents/skills/*/scripts/*.sh .agents/parts/*/scripts/*.sh; do
   [ -e "$s" ] || continue
   if bash -n "$s"; then ok "bash -n $s"; else bad "syntax $s"; fi
 done
 
 # 4. 目录结构（tests/docs/adr 等不可删；本仓无 src，见 README 定位）
-for d in tests docs/adr scripts .agents/skills .agents/memory .agents/workflows; do
+for d in tests docs/adr scripts .agents/skills .agents/parts .agents/memory .agents/workflows; do
   if [ -d "$d" ]; then ok "dir $d"; else bad "missing dir $d"; fi
 done
 

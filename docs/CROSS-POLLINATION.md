@@ -34,7 +34,7 @@
 | X12 | fitness 反模式扫描 + 行内抑制（rule+reason 绑定） | REQ-023/038 | `scripts/fitness.sh`（grep 版五规则） | 抑制标记 `musecode-fitness:ignore`，要求同行 |
 | X13 | retention/state prune：证据分级销毁，活动 task 引用永不删 | REQ-023 | `docs/MEMORY_GUIDE.md` §保留、`scripts/` 预留 | 本轮只定策略，未实现 prune 脚本（缺口 §5） |
 | X14 | 严格 CLI 契约：未知 flag rc=2，ghost argument 零容忍 | REQ-036 | 全部 `scripts/*.sh` 统一 `--help` + 非法参数 rc=2 | |
-| X15 | 派单契约：Goal/Scope/Out-of-Scope/Existing-Pattern/Verification/Escalation + 交接六段 | `AGENTS.md` §派发契约 | `.agents/skills/_template/SKILL.md` 输入/输出节 + `docs/LARGE-REPO.md` §派单 | Business-context 栏保留为可选 |
+| X15 | 派单契约：Goal/Scope/Out-of-Scope/Existing-Pattern/Verification/Escalation + 交接六段 | `AGENTS.md` §派发契约 | `.agents/parts/_template/SKILL.md` 输入/输出节 + `docs/LARGE-REPO.md` §派单 | Business-context 栏保留为可选 |
 
 ## 3. 从 cc-base 采纳
 
@@ -85,26 +85,34 @@
 
 donor 并集 19 个 skill，主入口 SKILL.md 19/19 已落地；references 30+ 文件已整件收录（非"仅索引"，旧说法已更正），供体专用 5 处已适配（2 处 predev 路径、1 处 setup 路径、1 处 exec-envelope 机制、1 处示例命令标注），主入口路由 12/12 已接。收录≠验证效果：方法类参考的实际采用以后续真实任务观察为准。
 
+**下架（2026-09-19，Fable #2）**：装机只留需求→开发→审查一条线（`product-spec-builder`/`dev-builder`/`code-review`）；上表其余 15 个 + `_template` 已移入 `.agents/parts/` 作零件库（不装机、不触发，按需取用）。上架条件：所在线跑通后，按 Fable #3（真犯错才加规则）逐个评估。
+
 | 本仓 skill | 主入口 | references 收录 | 主入口路由 | 适配/验证备注 |
 |---|---|---|---|---|
 | product-spec-builder | √ | 10 件整件 | √ 参考节 10 条 | 通用方法原样保留；触发条件已补 |
-| arch-designer | √ | 3 件整件 | √ 参考节 3 条 | 同上 |
-| dfx-designer | √ | 2 件整件 | √ 参考节 2 条 | 范例 setup 路径已适配本仓 |
-| design-brief-builder | √ | 7 件整件 | √ 参考节 7 条 | 2 处 predev-lint 路径已适配本仓 |
-| design-maker | √ | 3 件整件 | √ 参考节 3 条 | 通用方法原样保留 |
-| dev-planner | √ | 1 件整件 | √ 参考节 1 条 | 同上 |
+| arch-designer | √ | 3 件整件 | √ 参考节 3 条 | 同上；已下架→`.agents/parts/` |
+| dfx-designer | √ | 2 件整件 | √ 参考节 2 条 | 范例 setup 路径已适配本仓；已下架→`.agents/parts/` |
+| design-brief-builder | √ | 7 件整件 | √ 参考节 7 条 | 2 处 predev-lint 路径已适配本仓；已下架→`.agents/parts/` |
+| design-maker | √ | 3 件整件 | √ 参考节 3 条 | 通用方法原样保留；已下架→`.agents/parts/` |
+| dev-planner | √ | 1 件整件 | √ 参考节 1 条 | 同上；已下架→`.agents/parts/` |
 | dev-builder | √ | 2 件整件 | √ 参考节 2 条 | 同上 |
-| bug-fixer | √ | 1 件整件 | √ 参考节 1 条 | 同上 |
+| bug-fixer | √ | 1 件整件 | √ 参考节 1 条 | 同上；已下架→`.agents/parts/` |
 | code-review | √ | —（无） | — | 独立预期由 test-builder 侧共用 |
-| test-builder | √ | 3 件整件 | √ 参考节 3 条 | exec-envelope 句已改本仓九段信封；脚手架示例命令已标注 |
-| red-blue-review | √ | —（无） | — | 证据包脚本自写（行为对齐 donor） |
-| release-builder | √ | 1 件整件 | √ 参考节 1 条 | 通用方法原样保留 |
-| branch-finisher | √ | —（无） | — | — |
-| large-repo-harness | √ | —（无） | — | catalog 示例在 `.agents/harness/` |
+| test-builder | √ | 3 件整件 | √ 参考节 3 条 | exec-envelope 句已改本仓九段信封；脚手架示例命令已标注；已下架→`.agents/parts/` |
+| red-blue-review | √ | —（无） | — | 证据包脚本自写（行为对齐 donor）；已下架→`.agents/parts/` |
+| release-builder | √ | 1 件整件 | √ 参考节 1 条 | 通用方法原样保留；已下架→`.agents/parts/` |
+| branch-finisher | √ | —（无） | — | —；已下架→`.agents/parts/` |
+| large-repo-harness | √ | —（无） | — | catalog 示例在 `.agents/harness/`；已下架→`.agents/parts/` |
 | skill-builder | —（已删） | —（随删） | — | 原生 `create-skill` 全覆盖；项目残余并入 SKILLS_SPEC §6；`scripts/skill-lint.sh` 保留 |
-| feedback-writer | √ | —（无） | — | feedback 双模板→`.agents/feedback/` |
-| evolution-engine | √ | 1 件整件 | √ 参考节 1 条 | 通用方法原样保留 |
-| progress-recorder | √ | —（无） | — | — |
-| domain-rulings | √ | —（无） | — | canon→`.agents/rules/domain-rulings.md` |
+| feedback-writer | √ | —（无） | — | feedback 双模板→`.agents/feedback/`；已下架→`.agents/parts/` |
+| evolution-engine | √ | 1 件整件 | √ 参考节 1 条 | 通用方法原样保留；已下架→`.agents/parts/` |
+| progress-recorder | √ | —（无） | — | —；已下架→`.agents/parts/` |
+| domain-rulings | √ | —（无） | — | canon→`.agents/rules/domain-rulings.md`；已下架→`.agents/parts/` |
 
 未收录（无义务读完，按失败路径深读时再取）：供体 `templates/*.md` 模板文件、`skill-builder/scripts/test-skill-behavior.sh`、donor runtime 私有脚本。整件采用到本仓正文的另计 6 件：地板→`docs/UI-QUALITY-FLOOR.md`、词汇→`docs/DESIGN_VOCABULARY.md`、口径→`.agents/rules/domain-rulings.md`、计划模板→`docs/PLAN_TEMPLATE.md`、CHANGELOG 节→REQ 模板 §8、自检清单→指南 §7。
+
+**已知缺口（2026-09-19，Fable5.1 评审）**：18 个主入口是产物/步骤清单，对话判断（何时停问、何时顶回、好问答长什么样）缺失——主入口 0 句，references 合计 1 句（`arch-designer` 实测）。原因：骨架搭在读源码之前（见上更正记录），压缩时无使用依据。约束：主入口判断句只加跑出来的（每条带使用记录出处：任务+文件位置），不从 donor 原文回填；玩具任务不计数。
+
+**加规则门（2026-09-19，Fable #3，常驻）**：每想加一条规则，先写清"它防哪个错"，再跑一次看犯不犯。犯了→加规则并记下那次失败（任务+文件位置）；没犯→不加。cc-base 的 45 条 feedback 只当参考，不照着装。
+
+**进化原则（2026-09-19，Fable #5，先只定这一条）**：`.agents/` 对 agent 只读，进化的产物只能是交人审的补丁，不能是自己落盘的改动。其余等 #3 积累出第二次同类改动再说。

@@ -24,7 +24,8 @@
 | `docs/QUALITY_CHECKLIST.md` | 五维质检（Resilience/Security/Safety/Privacy/Reliability） |
 | `tests/` | 脚手架契约测试 + 行为探针 |
 | `scripts/` | 本地校验与运维脚本（smoke/verify/check/fitness/arch-check） |
-| `.agents/skills/` | 项目技能（官方路径，见 SKILLS_SPEC） |
+| `.agents/skills/` | 项目技能（官方路径，见 SKILLS_SPEC；仅装机 3 个） |
+| `.agents/parts/` | 零件库（下架技能，按需取用，不触发） |
 | `.agents/memory/` | 项目记忆（`MEMORY.md` 索引） |
 | `.agents/workflows/` | 可复用 workflow 脚本 |
 | `.muse/hooks.json` | 项目 hooks 声明（跑在沙箱之外） |
