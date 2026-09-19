@@ -46,7 +46,7 @@ describe("utils 纯函数", () => {
 });
 ```
 
-**跑**：`npm run test`
+**跑**：`npm run test`（示例工程的 vitest 命令；换你的项目测试命令）
 
 ## 双向转换 / 外部格式契约（必抄法）
 

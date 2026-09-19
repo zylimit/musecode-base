@@ -1,5 +1,8 @@
 #!/bin/bash
 # arch-check.sh — 架构防腐最小版：catalog 声明图校验 + JS/TS/Python 静态 import 实边对照 + 趋势棘轮。
+# 实边范围：只扫 src/**（JS/TS 用静态 import，Python 用 AST helper，失败回退正则并声明）。
+#   相对导入按语言规则归属（JS 按文件路径规范化；Python 按目录≈包），解不出的记 partial；
+#   catalog 模块路径落在 src/ 之外的，WARN 明示未覆盖——零边不等于结构干净。
 # 用法：bash scripts/arch-check.sh [--scan] [--record] [--gate] [--baseline FILE] [--help]
 #   无 flag     只做声明图校验（catalog lint）
 #   --scan      追加实边扫描（Python 用 AST，JS/TS 用静态 import；AST 不可用保守回退正则并声明）
@@ -39,7 +42,7 @@ command -v python3 >/dev/null 2>&1 || { echo "arch-check: python3 not found" >&2
 
 export ARCH_CATALOG="$CATALOG" ARCH_SCAN="$SCAN" ARCH_RECORD="$RECORD" ARCH_GATE="$GATE"
 python3 - "$CATALOG" <<'PYEOF'
-import json, os, re, sys, glob as pyglob
+import json, os, posixpath, re, sys, glob as pyglob
 from pathlib import Path
 
 catalog_path = sys.argv[1]
@@ -143,7 +146,29 @@ JS_IMPORT = re.compile(r"""(?:import\s+(?:[^'"]*?\s+from\s+)?|require\()\s*['"](
 PY_IMPORT = re.compile(r"^\s*(?:from\s+([\w.]+)\s+import|import\s+([\w.,\s]+))", re.M)
 scanned, partial_reasons = 0, set()
 
-_ast_imports = {}  # path -> [top modules] | None(=AST 不可用)
+def py_rel_targets(f, level, module, names):
+    """Python 相对导入归属（静态近似：目录≈包，namespace package 同）。
+    返回 (targets, partial_note)：targets 为 src/ 下候选路径；解不出时 note 非空。"""
+    try:
+        comps = list(Path(f).parent.relative_to("src").parts)
+    except ValueError:
+        return [], f"RELATIVE_OUTSIDE_SRC: {f} level={level}"
+    if level < 1:
+        return [], f"RELATIVE_BAD_LEVEL: {f} level={level}"
+    if level - 1 > len(comps):
+        return [], f"RELATIVE_BEYOND_TOP: {f} level={level}"
+    base = comps[:len(comps) - (level - 1)]
+    if module:
+        return [posixpath.join("src", *(base + module.split(".")))], None
+    if names:
+        tgts = [posixpath.join("src", *(base + [n.split(".")[0]])) for n in names if n and n.split(".")[0]]
+        if tgts:
+            return tgts, None
+    return [], f"RELATIVE_EMPTY: {f} level={level} (no module, no names)"
+
+_ast_abs = {}     # path -> [absolute top modules]
+_ast_rel = {}     # path -> [(level, module, names)]
+_ast_issues = {}  # path -> [helper issues]（缺省=helper 未覆盖该文件）
 if scan or record or gate:
     files = []
     for ext in ("*.py", "*.js", "*.mjs", "*.cjs", "*.ts", "*.tsx"):
@@ -166,16 +191,22 @@ if scan or record or gate:
                                  capture_output=True, text=True, timeout=120)
             if out.returncode == 0:
                 for item in json.loads(out.stdout).get("files", []):
-                    tops = []
+                    absmods, rels = [], []
                     for imp in item.get("imports", []):
-                        if not isinstance(imp, dict) or imp.get("level", 0) > 0:
+                        if not isinstance(imp, dict):
+                            continue
+                        lvl = imp.get("level", 0) or 0
+                        if lvl > 0:
+                            rels.append((lvl, imp.get("module") or "", list(imp.get("names") or [])))
                             continue
                         mod = imp.get("module") or ""
                         if not mod and imp.get("names"):
                             mod = imp["names"][0]
                         if mod:
-                            tops.append(mod)
-                    _ast_imports[item["path"]] = tops
+                            absmods.append(mod)
+                    _ast_abs[item["path"]] = absmods
+                    _ast_rel[item["path"]] = rels
+                    _ast_issues[item["path"]] = [i for i in item.get("issues", []) if isinstance(i, str)]
         except Exception:
             pass
     for f in files:
@@ -190,11 +221,19 @@ if scan or record or gate:
             continue
         specs = set()
         if f.endswith(".py"):
-            imp = _ast_imports.get(f, None)
+            imp = _ast_abs.get(f, None)
             if imp is None:  # AST 不可用时回退正则（注释/字符串可能误报，保守记录）
                 for a, b in PY_IMPORT.findall(text):
-                    if a and not a.startswith("."):
-                        specs.add(("py", a.split(".")[0]))
+                    if a:
+                        dots = len(a) - len(a.lstrip("."))
+                        if dots:
+                            tgts, note = py_rel_targets(f, dots, a[dots:], [])
+                            if note:
+                                partial_reasons.add(note)
+                            for t in tgts:
+                                specs.add(("rel", t))
+                        else:
+                            specs.add(("py", a.split(".")[0]))
                     elif b:
                         for name in b.split(","):
                             n = name.strip().split(" ")[0].split(".")[0]
@@ -205,13 +244,24 @@ if scan or record or gate:
                 for name in imp:
                     if name and not name.startswith("."):
                         specs.add(("py", name.split(".")[0]))
+                for (lvl, mod, names) in _ast_rel.get(f, []):
+                    tgts, note = py_rel_targets(f, lvl, mod, names)
+                    if note:
+                        partial_reasons.add(note)
+                    for t in tgts:
+                        specs.add(("rel", t))
+                for iss in _ast_issues.get(f, []):
+                    if iss == "python-dynamic-import":
+                        partial_reasons.add(f"DYNAMIC: {f} uses dynamic import (partial coverage)")
+                    else:
+                        partial_reasons.add(f"PYAST: {f} {iss} (partial coverage)")
             if re.search(r"__import__|importlib|exec\(|eval\(", text):
                 partial_reasons.add(f"DYNAMIC: {f} uses dynamic import (partial coverage)")
         else:
             for a, b in JS_IMPORT.findall(text):
                 spec = a or b
                 if spec.startswith("."):
-                    target = str((Path(f).parent / spec).as_posix())
+                    target = posixpath.normpath((Path(f).parent / spec).as_posix())
                     specs.add(("rel", target))
                 elif spec.startswith("@"):
                     specs.add(("pkg", spec.split("/")[0] + "/" + spec.split("/")[1] if "/" in spec else spec))
@@ -271,12 +321,19 @@ if gate:
     if removed:
         print(f"INFO: {len(removed)} baseline edges gone (paydown or dead code): {', '.join(removed[:5])}")
 
+if scan or record or gate:
+    for m in modules:
+        for p in m.get("paths", []):
+            lit = p.split("*")[0].rstrip("/")
+            if lit and not (lit == "src" or lit.startswith("src/")):
+                print(f"WARN[SCAN_SCOPE]: {m['id']} 路径 {p} 在 src/ 实边扫描之外——零边不代表该模块干净")
+                break
 for w in sorted(partial_reasons):
     print(f"WARN: {w}")
 for e in sorted(errors):
     print(f"ERROR: {e}")
 print("---")
-print(f"arch-check: errors={len(errors)} warnings={len(partial_reasons)} scanned={scanned} edges={len(real_edges)}")
+print(f"arch-check: errors={len(errors)} warnings={len(partial_reasons)} scanned={scanned} edges={len(real_edges)} roots=src")
 if partial_reasons and gate:
     print("arch-check: PARTIAL scan under --gate blocks (strict)")
     sys.exit(1)

@@ -43,7 +43,7 @@
 
 ## 放回既有信封与 finding
 
-普通 Markdown 回传遵守所属角色契约：tester 使用 PASS / FAIL / BLOCKED / NEEDS_CONTEXT，reviewer 使用其既有工作状态。使用 `--output-schema .codex/harness/schemas/exec-envelope.schema.json` 时，机器 JSON 的 `status` 使用 DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED，其余键名也按 schema，检查 PASS/FAIL 与未运行原因写入已有 verified、notVerified、evidence 等允许字段。不能把 Markdown 状态直接填进 JSON；两种载体都仍需当前主体的真实 receipt，DONE 不是质量批准。
+普通 Markdown 回传遵守所属角色契约：tester 使用 PASS / FAIL / BLOCKED / NEEDS_CONTEXT，reviewer 使用其既有工作状态。机器回执用本仓九段信封字段（Status/Changed/Verified/Not-verified/Needs-review-by/Evidence/Business-assumptions/Counter-examples/Domain-findings），状态只用四态、不新造 DONE 族 schema（供体原文为 `--output-schema .codex/harness/schemas/exec-envelope.schema.json` 的 DONE/DONE_WITH_CONCERNS，本仓无此机制）。不能把 Markdown 状态直接填进 JSON 键；两种载体都仍需当前主体的真实 receipt，Verified 不是质量批准。
 
 review finding 的既有 `Basis` 说明独立规则，`Evidence` 写最小初态、操作、expected/actual 和实际运行或静态推导的区别，`Impact` 说明后果，`Fix` 给方向。录入 runtime 时映射到已有允许字段，不把教学表头作为新的 schema 键。未运行复验就明确未运行；审查发现了第一处问题也仍覆盖 controls 要求的后续 stage/lens。
 

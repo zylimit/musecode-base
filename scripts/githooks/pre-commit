@@ -9,5 +9,6 @@ bash scripts/smoke.sh || exit 2
 bash scripts/staged-check.sh || exit 2
 STAGED="$(git diff --cached --name-only --diff-filter=ACMR -z | tr '\0' ',' | sed 's/,$//')"
 if [ -n "$STAGED" ]; then
-  bash scripts/fitness.sh --paths "$STAGED" || exit 2
+  # 检查对象是 index（将提交内容），不是工作树：部分暂存时工作树已改也不漏检
+  bash scripts/fitness.sh --staged --paths "$STAGED" || exit 2
 fi

@@ -55,6 +55,6 @@ description: design-brief-builder 0-1 模式启动时读。从 Product-Spec 到 
 [生成]
     生成前先把感受翻译成设计属性，检查一致性，矛盾逼取舍；对照 style-vocabulary 的 AI 通病清单看每个轴是不是落在默认上——落在默认上的，问自己「这是给这个产品的选择还是给任何同类页面都会给的」，是后者就改并说明改了什么。
     按 templates/design-brief-template.md 生成 Design-Brief.md；按 templates/design-md-template.md 生成 DESIGN.md，token 值定不下来的写方向并标 DASM，prose 每段说清为什么、用在哪、不用在哪，Do's and Don'ts 收进参照带来的否定约束与反参考。
-    跑 `node .claude/scripts/predev-lint.mjs`；能跑 `npx @google/design.md lint DESIGN.md` 就跑并修 error。
+    跑 `node scripts/predev-lint.mjs`（本仓路径；供体原文为 `.claude/scripts/`）；能跑 `npx @google/design.md lint DESIGN.md` 就跑并修 error。
     确保和 Product Spec 的 P0 内容一致。
     生成后引导下一步：/design-maker 出可交互设计稿，或 /dev-planner。

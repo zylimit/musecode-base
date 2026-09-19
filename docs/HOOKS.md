@@ -1,9 +1,11 @@
 # Hooks 与门禁说明
 
-> 目标：把 `AGENTS.md` §4 验证门禁落成可执行的三层强制。与 `HARNESS.md` 的 H4（验证门禁）、H5（需求→ADR→交付链）对应。
+> 目标：把 `AGENTS.md` §4 验证门禁落成三层防线（目标态；当前会话 hook 层未启用未验证，见下）。
 > 吸收 cc-base 三层强制（C10）与退出码契约（C13）、codex 五态语义（X11）。
 
-## 1. 三层强制（缺一不可）
+## 1. 三层防线（目标态；接入条件见各层"生效条件"列）
+
+> 现状：git hook + CI 两层已接线生效；Muse 原生 hook 层只有 `.muse/hooks.json.example` 骨架，未启用、未验证——启用前"缺一不可"是目标，不是现状。需要启用时只验证一个实际需要的事件/输入/退出/重载行为，再扩展。
 
 | 层 | 位置 | 管到哪 | 生效条件 |
 |---|---|---|---|
@@ -18,7 +20,7 @@
 | 时机 | 执行 | 阻断条件 | 可否绕过 |
 |---|---|---|---|
 | 每次改码后（手动 L0） | `bash scripts/smoke.sh` | 任一 FAIL | 否：先修再交 |
-| `git commit`（pre-commit） | smoke + `fitness.sh --paths <staged>` | FAIL/error | 否（禁 `--no-verify`，见 `AGENTS.md` §5） |
+| `git commit`（pre-commit） | smoke + `fitness.sh --staged --paths <staged>`（查 index 字节） | FAIL/error | 否（禁 `--no-verify`，见 `AGENTS.md` §5） |
 | `git push`（pre-push） | smoke + `verify.sh` | FAIL/BLOCKED | 否 |
 | CI | smoke + verify + `check.sh` + `arch-check.sh --gate`（有 catalog 时） | 同上 | 否 |
 

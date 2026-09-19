@@ -77,8 +77,7 @@ report() { # report <level> <rule> <origfile> <line> <text> <bytefile>
     fi
     case " $VALID_RULES " in *" $mrule "*) ;; *)
       ERR=$((ERR+1)); echo "ERROR[invalid-suppression]: $orig:$line 未知规则 $mrule"; return 0;; esac
-    [ "$mrule" = "$rule" ] || return 0  # 规则不对号：本条不抑制，继续报
-    return 0
+    [ "$mrule" = "$rule" ] && return 0  # 对号才抑制；不对号落空，继续报原 finding
   fi
   if [ "$level" = "error" ]; then ERR=$((ERR+1)); echo "ERROR[$rule]: $orig:$line $text";
   else WARNC=$((WARNC+1)); echo "WARN[$rule]: $orig:$line $text"; fi

@@ -35,6 +35,10 @@ description: 当用户说要创建新技能，或进化提议新增技能时使�
 
 新建 `api-linter`：参照 code-review（自主分析型）→ 骨架填充（触发/三维清单/流程）→ 自检 → SPEC 加行 → ADR（新增门禁能力）。
 
+## 参考（`references/`，按触发条件读，不预读）
+
+- `interaction-design.md`：创建/丰富交互方法或写复验场景时读（可选方法，非必问卷）。
+
 ## Donor 出处
 
 - `cc-base/.claude/skills/skill-builder/SKILL.md`（三层模块化、交互模式参照、注册三步）

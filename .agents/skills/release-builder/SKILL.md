@@ -41,6 +41,10 @@ description: 当用户说要打包、部署、发布、上线，或项目开发�
 
 CLI 发版：回归绿 → 构建 → 产物扫出 `.env` 残留 → 停，修 .gitignore+重建 → 全局安装逐命令冒烟 → 用户确认 → publish → 再验 `npm view` 版本与 digest。
 
+## 参考（`references/`，按触发条件读，不预读）
+
+- `artifact-and-recovery.md`：显式交付涉打包/安装/加载/远端状态变化时读（普通本地文件产出不加部署流程）。
+
 ## Donor 出处
 
 - `cc-base/.claude/skills/release-builder/SKILL.md`（第一性原则、隐私审计、部署三件套、回退策略）

@@ -35,6 +35,12 @@ description: 当需求已定、要做技术方案/架构设计/写ADR，或争�
 
 争论"订单状态放订单服务还是履约服务"：列"退款后显示什么"事件追演 → 事实归属定履约 → 订单侧只存投影 → ADR 记录 + catalog 加边 + `arch-check.sh` 验证无环。
 
+## 参考（`references/`，按触发条件读，不预读；不新增门禁/表格必填项）
+
+- `collaboration-walkthrough.md`：跨职责写入、外部结果不确定或存量迁移影响边界时读（业务路径讨论法）。
+- `decision-evaluation.md`：重要候选、质量取舍或敏感假设影响当前决定时读（裁剪评价法，非完整 QAW/ATAM）。
+- `example-after-sales-arch.md`：范例（M 档售后架构全文），首次写架构或定 ADR 粒度时对照。
+
 ## Donor 出处
 
 - `cc-base/.claude/skills/arch-designer/SKILL.md`（S/M/L、事件检验、ADR 九字段、包络）

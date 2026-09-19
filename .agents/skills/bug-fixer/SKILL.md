@@ -35,6 +35,10 @@ description: 当功能异常、测试失败、编译报错或运行时出现明�
 
 "退款后还显示完成"：先核"完成"的两种含义（履约结束 vs 账务结清）→ 查 Spec 依据 → 复现（退款单状态流）→ 红锁定"已履约退款未到账应显示 X" → 修状态机 → 回归。
 
+## 参考（`references/`，按触发条件读，不预读）
+
+- `comparison-and-experiments.md`：故障多解释、只在部分环境出现或修过仍失败时读（正常对照与诊断实验）。
+
 ## Donor 出处
 
 - `cc-base/.claude/skills/bug-fixer/SKILL.md`（复现/假设/红锁/三次熔断/进程边界）

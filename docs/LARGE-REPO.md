@@ -1,7 +1,7 @@
 # 大仓指南（100 万行级治理）
 
 > 本仓靠“缩小活动范围”支撑 100 万行级项目，不靠全仓灌入上下文。吸收 codex `LARGE-REPO-GUIDE.md`（X8）与 cc `11-large-repo.md`（C6/C12–C14）。
-> 与 `SCALING.md` 的分工：SCALING 定容量/SLO/压测口径，本文件定**治理机制**（目录/影响/上下文/验证/防腐）。
+> 与 `SCALING.md` 的分工：SCALING 定本仓脚本的扫描范围/上限/验证方法，本文件定**治理机制**（目录/影响/上下文/验证/防腐）。目标项目运行时容量自定，本仓不承诺。
 
 ## 1. 启用条件（两步）
 
@@ -43,7 +43,7 @@
 - `riskTier`：low/medium/high；`attributes` 四档 critical/high/medium/low（X5 简化版）。
 - `class` 为 security/safety/privacy 的 check 永不可豁免、不可 fast 跳过。
 
-`arch-check.sh` 校验码：`CATCH_ALL` / `UNMAPPED` / `OVERLAP` / `DANGLING_DEP` / `SELF_FORBIDDEN` / `FORBIDDEN_DECLARED` / `UNKNOWN_LAYER` / `UNKNOWN_ATTRIBUTE`。`CYCLE` 与 `TRUNCATED` 为 warning（保守扩散，不静默漏项）。
+`arch-check.sh` 校验码：`CATALOG_PARSE` / `BAD_ID` / `DUPLICATE_ID` / `CATCH_ALL` / `OVERLAP` / `DANGLING_DEP` / `SELF_DEP` / `SELF_FORBIDDEN` / `FORBIDDEN_DECLARED` / `UNKNOWN_LAYER` / `UNKNOWN_ATTRIBUTE` / `UNKNOWN_TIER` / `UNJUSTIFIED_TIER` / `CYCLE` / `FORBIDDEN_EDGE` / `UNDECLARED_EDGE` / `LAYER_VIOLATION` / `NEW_EDGE` / `TREND_NO_BASELINE` / `TREND_BASELINE_CORRUPT` 均为 error；`TRUNCATED`/`REGEX_FALLBACK`/`DYNAMIC`/`RELATIVE_*`/`PYAST`/`UNREADABLE` 为 partial-warn（`--gate` 下任一 partial 即 fail，不静默漏项）。
 
 ## 3. 固定顺序（铁律）
 
@@ -63,6 +63,8 @@ catalog lint → affected/反向依赖闭包 → task baseline → context pack 
 - 读重工作可并行（审查维度/探索/批量验）；写重默认串行。fan-out 到 workflow/subagent 规模需用户显式 opt-in（token 约 15x，Anthropic 实证，转引自 cc 文档）。
 
 ## 5. 验证门（四态 + 属性门）
+
+> 人工执行语义：verification plan/档位/豁免当前无机器引擎消费（`verify.sh`/`check.sh`/git hooks/CI 均不读 tier 状态，已核），由执行人按本表操作。机器只校验声明文件格式（`arch-check.sh`）与 git hooks/CI 固定门禁。不为此补第二个 Assurance 引擎（见 `progress.md` D2）。
 
 单 check 四态：`PASS`（exit 0）/ `FAIL`（exit 非零）/ `BLOCKED`（缺 command/缺二进制）/ `SKIPPED`（有效 waiver 或 fast 档非保护 check）。聚合：任一 FAIL → FAIL；任一 BLOCKED → BLOCKED；**空计划 = BLOCKED**（`emptyPlan`，配置缺口必须可见）；全 SKIPPED → rc=3。
 
@@ -85,8 +87,8 @@ catalog lint → affected/反向依赖闭包 → task baseline → context pack 
 | arch/fitness | advise | block（提交前） | block |
 | 密钥外泄/危险删除/发布前置/记忆同步/通知 | block | block | block（floor，不在表内） |
 
-- fast 必带 reason、上限 8h、到期自回默认档；状态 `.agents/harness-state/tier.json`（git 忽略）。
-- 改家底（`.agents/skills/**`、`.muse/hooks.json`、`scripts/**`、`AGENTS.md`、`ARCHITECTURE.md`、`docs/**` 规范）本轮自动 strict，提交后回落。升档不需批，降档要 reason 并记账。
+- fast 必带 reason、上限 8h、到期自回默认档；状态 `.agents/harness-state/tier.json`（git 忽略）。档位是建议（人工执行），无机器强制。
+- 改家底（`.agents/skills/**`、`.muse/hooks.json`、`scripts/**`、`AGENTS.md`、`ARCHITECTURE.md`、`docs/**` 规范）本轮建议 strict——只是 `tier.sh status` 的显示规则（raise），提交后回落显示。升档不需批，降档要 reason 并记账（人工记）。
 - 档位只调工程门强度，**不改** Muse approval/sandbox/模型三轴（X1）。
 
 ## 8. 派单契约（多智能体）

@@ -35,6 +35,11 @@ description: 当要定质量目标/非功能需求/SLO/安全隐私合规基线�
 
 "下单接口要快" → 追：p99 多少/什么量级下/慢了谁受损 → 定"p99 < 300ms @ 500rps（压测，见 SCALING.md），超时熔断+降级有观测" → 威胁表加"超时重试风暴"条。
 
+## 参考（`references/`，按触发条件读，不预读）
+
+- `measurement-methods.md`：制定目标、解释指标、设计测量或比较恢复/跨属性代价时读相关部分。
+- `example-after-sales-dfx.md`：范例（售后 DFX 全文），首次写 DFX 或定档位粒度时对照。
+
 ## Donor 出处
 
 - `cc-base/.claude/skills/dfx-designer/SKILL.md`（13 维、25010 映射、威胁表、预算表、优先级栈）

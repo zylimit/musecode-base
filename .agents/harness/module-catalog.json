@@ -1,0 +1,63 @@
+{
+  "_comment": "musecode-base 本仓模块目录：门禁脚本/契约测试/智能体配置/CI/安装器。riskTier/attributes 人工定档。实边扫描只覆盖 src/**（本仓无 src，edges 为空）；catalog 的价值是模块清单、分层声明与禁边声明，arch-check --gate 强制声明有效 + 无新边。删掉本文件即关闭（小仓零负担），见 docs/LARGE-REPO.md §1。",
+  "version": 1,
+  "layers": ["tests", "gates", "config"],
+  "global": ["AGENTS.md", "ARCHITECTURE.md"],
+  "ignored": ["README.md", "docs/**", "*.md", "FRAMEWORK-MANIFEST.json"],
+  "modules": [
+    {
+      "id": "gates",
+      "paths": ["scripts/**"],
+      "dependsOn": [],
+      "forbiddenDependencies": ["contract-tests"],
+      "layer": "gates",
+      "riskTier": "high",
+      "attributes": { "reliability": "high", "security": "medium", "maintainability": "medium" },
+      "verification": ["smoke", "verify", "arch-gate"]
+    },
+    {
+      "id": "contract-tests",
+      "paths": ["tests/**"],
+      "dependsOn": ["gates"],
+      "layer": "tests",
+      "riskTier": "medium",
+      "attributes": { "reliability": "high", "maintainability": "medium" },
+      "verification": ["contract-tests"]
+    },
+    {
+      "id": "agent-config",
+      "paths": [".agents/**"],
+      "dependsOn": [],
+      "layer": "config",
+      "riskTier": "medium",
+      "attributes": { "reliability": "medium", "maintainability": "medium" },
+      "verification": ["skill-lint"]
+    },
+    {
+      "id": "ci-workflows",
+      "paths": [".github/**"],
+      "dependsOn": [],
+      "layer": "config",
+      "riskTier": "medium",
+      "attributes": { "reliability": "medium" },
+      "verification": ["smoke"]
+    },
+    {
+      "id": "setup-root",
+      "paths": ["setup.sh", "setup.ps1"],
+      "dependsOn": [],
+      "layer": "config",
+      "riskTier": "low",
+      "attributes": { "reliability": "medium", "maintainability": "medium" },
+      "verification": ["smoke"]
+    }
+  ],
+  "checks": {
+    "arch-gate": { "command": "bash scripts/arch-check.sh --gate", "attributes": ["maintainability"] },
+    "contract-tests": { "command": "python3 -m pytest tests/ -q", "attributes": ["reliability"] },
+    "smoke": { "command": "bash scripts/smoke.sh", "attributes": ["reliability"] },
+    "verify": { "command": "bash scripts/verify.sh", "attributes": ["reliability"] },
+    "skill-lint": { "command": "bash scripts/skill-lint.sh", "attributes": ["maintainability"] }
+  },
+  "contextPack": { "maxTotalChars": 120000, "maxFiles": 40, "maxFileChars": 6000, "maxDiffChars": 40000 }
+}

@@ -93,7 +93,7 @@ echo "  module-catalog.json：$cat_state"
 echo "  tsconfig.json：$ts_count 个"
 echo "  .py 文件：$py_count"
 echo "  以上某项不在本仓，对应的闸在这就没有可拦的场景，零拦停无从评价——"
-echo "  退役任何一个闸之前，先查下游项目的 .claude/evidence/gate-block.log。"
+echo "  退役任何一个闸之前，先查下游项目的 .agents/harness-state/gate-block.log（verify.sh 的拦截账本）。"
 echo ""
 
 # (c) 汇总

@@ -69,8 +69,8 @@ case "$cmd" in
     echo "tier: standard (source: default)"; exit 0
     ;;
   off)
-    mkdir -p "$(dirname "$STATE")"
-    printf '{"tier":"standard","reason":"tier off"}\n' > "$STATE"
+    mkdir -p "$(dirname "$STATE")" 2>/dev/null || { echo "tier: 状态不可写：$STATE（sandbox 只读？）" >&2; exit 2; }
+    printf '{"tier":"standard","reason":"tier off"}\n' > "$STATE" 2>/dev/null || { echo "tier: 状态不可写：$STATE（sandbox 只读？）" >&2; exit 2; }
     echo "tier: standard"; exit 0
     ;;
   on)
@@ -78,10 +78,10 @@ case "$cmd" in
     case "$hours" in ''|*[!0-9]*|0) echo "tier: hours 必须是正整数" >&2; exit 2;; esac
     [ "$hours" -gt 8 ] && { echo "tier: hours 上限 8（截断为 8）" >&2; hours=8; }
     [ -z "$reason" ] && { echo "tier: fast 必带 reason（用法：tier.sh on [hours] <reason>）" >&2; exit 2; }
-    mkdir -p "$(dirname "$STATE")"
+    mkdir -p "$(dirname "$STATE")" 2>/dev/null || { echo "tier: 状态不可写：$STATE（sandbox 只读？）" >&2; exit 2; }
     exp=$(( $(now_epoch) + hours * 3600 ))
     printf '{"tier":"fast","hours":%s,"expires":%s,"reason":%s}\n' "$hours" "$exp" \
-      "$(printf '%s' "$reason" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')" > "$STATE"
+      "$(printf '%s' "$reason" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')" > "$STATE" 2>/dev/null || { echo "tier: 状态不可写：$STATE（sandbox 只读？）" >&2; exit 2; }
     echo "tier: fast (${hours}h, reason: $reason)"; exit 0
     ;;
 esac

@@ -35,6 +35,10 @@ description: 当 session 初始化时自动检查，或用户说"看看有没有
 
 扫出"删分支必须用 -d"出现 4 次且有 1 次丢工作代价 → 核查 AGENTS.md 未成文 → 提议写入 branch-finisher 约束节 → 用户确认 → 落地并标毕业。
 
+## 参考（`references/`，按触发条件读，不预读）
+
+- `learning-adoption-and-retirement.md`："已写下"被当"已解决"、重复问题/规则冲突或考虑减规则时读。
+
 ## Donor 出处
 
 - `cc-base/.claude/skills/evolution-engine/SKILL.md`（现状核查、实证门槛、提议格式）

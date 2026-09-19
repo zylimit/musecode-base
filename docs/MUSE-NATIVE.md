@@ -51,6 +51,8 @@
 
 本仓落实：门禁脚本默认只读检查；需写的脚本必须 `--dry-run` 先行；密钥与远端副作用永不进 allow 规则；见 `docs/QUALITY_CHECKLIST.md` SEC/SAF。
 
+运行态写路径说明：本仓运行态（`tier.json`、test-ledger、gate 日志）落 `.agents/harness-state/`（git 忽略）。官方文档默认该目录只读，但本机实测会话（托管沙箱）可写——`tier.sh on/off/status` 已验证读写正常。两条防御代替 `--yolo`：`tier.sh` 状态不可写时显式报错退出 2（不伪装档位）；`verify.sh` 的 ledger 写入失败静默旁路（判决不依赖日志落盘，设计如此）。若你的会话 sandbox 禁写该目录，tier 相关命令会明确报错，按提示处理，不要开 `--yolo` 绕过。
+
 ## 5. Subagents（容量 8 / worktree 隔离 / observer）
 
 - 来源：[Extending and automating](https://dev.meta.ai/docs/muse-code/extending)
@@ -65,6 +67,7 @@
 
 - 来源：[Workflows](https://dev.meta.ai/docs/muse-code/workflows)
 - 可用性：需含 workflow 脚本引擎的构建 + `WorkflowTool` 灰度；二者缺一则无 Workflow 工具与 `/workflows`；公开 `aarch64-apple-darwin` 包无 `workflow-script-engine-v8`，该产物上不可用。
+- 本机实测（`Muse Code 1.3.0 (1.3.0-R3401.1)`）：主 help 不列 workflows，但 `muse workflows --help` 可响应——`save/list` 可用；`run/recover` 系 QA 通道（help 明示"not advertised…kept for headless QA seeding and release smokes"），日常评审走子代理。单看一个帮助列表不足以定能力，须逐项实测。
 - 显式请求直接启动无二次确认；`Workflows=auto` 时任务够大可提议。
 - 上限：单 workflow 生涯最多 1000 child 调用，第 1001 个在启动前失败；本地活跃子上限 CPU 导出封顶 16，超宽 batch 排队。
 - `/workflows` 控制室：状态/耗时/token/子进度；C 取消选中，R 看完成结果；运行内 P 暂停/恢复、X 跳过选中运行子、R 重启选中运行子（**不是**已完成/失败子的通用重试）。后台继续跑，完成自动投递，不轮询。

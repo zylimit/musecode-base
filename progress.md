@@ -27,6 +27,7 @@
 - 2026-09-19：门禁脚本全落地（verify/check/fitness/arch-check/install-githooks/manifest）+ 契约测试 12 项 + 安装器双平台 + git init + hooks 安装。全绿：smoke 57/0、verify PASS、pytest 12/12、shellcheck clean。
 - 2026-09-19：首推 `github.com/zylimit/musecode-base`（空仓检视确认后 `main` 首 commit + push；P5 关闭）。
 - 2026-09-19：19/19 skill 全量蒸馏落地 + 19 机制文件精读 + 6 整件采用（地板/词汇/口径 canon/计划模板/CHANGELOG/lint），见台账 §6。
+- 2026-09-19：Astra 首审 9 项整改（安装契约/hook 对象/抑制语义/相对导入/工作流传参/权威分层/撤强制/原生核对/引用适配）+ 本仓 catalog 基线 + 16 项探针回归。冻结：smoke/verify/check 全绿、pytest 32+1skip、skill-lint 过、arch --gate rc=0。未 commit（等用户指令）。
 
 ## 待办
 
@@ -38,6 +39,6 @@
 
 ## Risks
 
-- R1：donor skill 源码已确认存在并精读（35 核心 + 19 机制文件，见台账 §6）；剩余 30+ 长案例/问题库仅索引。运行面实现（`.codex/runtime`、`.claude/hooks`）本次未列入。
+- R1：donor 主入口已对齐；30+ 长案例/问题库已整件收录 + 5 处适配 + 12 张路由表（台账 §6，已更正"仅索引"旧说法）。运行面实现（`.codex/runtime`、`.claude/hooks`）未列入；方法实际采用效果待真实任务观察。
 - R2：hooks.json 官方无字段级 schema，示例未经 `muse` 实测——以骨架 + 警告交付，未启用。
 - R3：100 万行治理算法（影响闭包/context pack）有文档无运行时——catalog/impact 的可执行引擎是下一阶段。

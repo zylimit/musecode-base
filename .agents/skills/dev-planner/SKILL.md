@@ -35,6 +35,10 @@ description: 当需求/设计已定、要拆开发计划/排 Phase/估工作量�
 
 售后派单 v1：P1 数据模型+迁移 → P2 派单核心流（可验收：建单→派单→接单）→ P3 异常与通知 → P4 报表。报表 Phase 发现依赖 P2 的状态机，串行。
 
+## 参考（`references/`，按触发条件读，不预读）
+
+- `acceptance-and-dependencies.md`：切片/依赖不清、验收落不到动作，或涉共享契约/迁移/集成/关键未知时读。
+
 ## Donor 出处
 
 - `cc-base/.claude/skills/dev-planner/SKILL.md`（价值排序、切片、spike、并行 disjoint）
