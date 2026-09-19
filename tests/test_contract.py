@@ -26,10 +26,9 @@ class TestScaffoldContract(unittest.TestCase):
         paths = [f"scripts/{n}" for n in os.listdir(os.path.join(ROOT, "scripts"))
                  if n.endswith(".sh")]
         paths.append("setup.sh")
-        for sub in ("skills", "parts"):
-            paths += [os.path.relpath(p, ROOT) for p in
-                      _glob.glob(os.path.join(ROOT, ".agents", sub, "*",
-                                              "scripts", "*.sh"))]
+        paths += [os.path.relpath(p, ROOT) for p in
+                  _glob.glob(os.path.join(ROOT, ".agents", "skills", "*",
+                                           "scripts", "*.sh"))]
         for p in paths:
             r = run(["bash", "-n", p])
             self.assertEqual(r.returncode, 0, msg=p)
@@ -46,7 +45,7 @@ class TestScaffoldContract(unittest.TestCase):
     def test_templates_nonempty(self):
         for p in ["docs/ADR_TEMPLATE.md", "docs/REQUIREMENTS_TEMPLATE.md",
                   "docs/PLAN_TEMPLATE.md",
-                  ".agents/parts/_template/SKILL.md",
+                  ".agents/skills/_template/SKILL.md",
                   ".agents/feedback/templates/feedback-topic-template.md"]:
             fp = os.path.join(ROOT, p)
             self.assertTrue(os.path.isfile(fp), msg=p)

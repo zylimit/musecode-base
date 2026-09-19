@@ -40,7 +40,7 @@
 
 ## 4. 档位与 fast 语义
 
-档位表见 `docs/LARGE-REPO.md` §7。fast 规则：必带 reason、上限 8h、到期自回；状态 `.agents/harness-state/tier.json`（git 忽略）；改家底（`AGENTS.md`、`ARCHITECTURE.md`、`docs/**` 规范、`scripts/**`、`.agents/skills/**`、`.agents/parts/**`、`.muse/hooks.json`）本轮自动 strict。五个地板闸（密钥外泄/危险删除/发布前置/记忆同步/通知）任何档都 block。
+档位表见 `docs/LARGE-REPO.md` §7。fast 规则：必带 reason、上限 8h、到期自回；状态 `.agents/harness-state/tier.json`（git 忽略）；改家底（`AGENTS.md`、`ARCHITECTURE.md`、`docs/**` 规范、`scripts/**`、`.agents/skills/**`、`.muse/hooks.json`）本轮自动 strict。五个地板闸（密钥外泄/危险删除/发布前置/记忆同步/通知）任何档都 block。
 
 fast 下门照跑、红照报、只记账不拦；`release` 装配在 fast 生效时直接 FAIL。降档必须留理由，进 `gate-block.log`。
 

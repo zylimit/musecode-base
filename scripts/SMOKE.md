@@ -18,10 +18,10 @@ bash scripts/smoke.sh
 |---|---|---|
 | 1 | 必备文件存在（协议×3、README、模板×2、HOOKS、QUALITY_CHECKLIST、MUSE-NATIVE、SCALING、SMOKE、SKILLS_SPEC、SKILL 模板） | 有文件缺失，按 FAIL 行补文件 |
 | 1b | 扩展必备文件（门禁脚本×6、安装器×2、manifest、契约测试、指南×4、示例 ADR/skill/memory/workflow/catalog/hooks 示例） | 同上 |
-| 1c | skill 文件（装机 3 skills + skill-lint + 计划模板 + 地板/词汇 + 口径 canon + feedback 模板/索引 + 零件库证据脚本） | 同上 |
+| 1c | skill 全量文件（19 skills + skill-lint + 计划模板 + 地板/词汇 + 口径 canon + feedback 模板/索引 + 证据脚本） | 同上 |
 | 2 | 模板非空 | 模板被清空，恢复内容 |
 | 3 | `bash -n scripts/*.sh` | 门禁脚本自身语法错，先修脚本 |
-| 4 | 目录结构（tests/docs/adr/scripts/.agents/skills/.agents/parts/.agents/memory/.agents/workflows；本仓无 src） | 有目录被删，恢复 |
+| 4 | 目录结构（tests/docs/adr/scripts/.agents/skills/.agents/memory/.agents/workflows；本仓无 src） | 有目录被删，恢复 |
 | 5 | python3/bash 可用 | 环境缺解释器，安装后重跑 |
 | 6 | 泄露初检（`.secrets` 不存在 + 私钥/云密钥/token 正则无命中） | 疑似密钥落仓：删密钥、轮换、查历史；误报则白名单化该行而非删检查 |
 | 7 | `smoke.sh` 可执行位 | 跑 `chmod +x scripts/smoke.sh` |

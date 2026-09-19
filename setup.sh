@@ -33,7 +33,7 @@ esac
 # 公共：规则/反馈模板随框架走；
 # 私有：反馈索引与历史、.example 之外的本仓 catalog/基线不发。
 PAYLOAD="AGENTS.md ARCHITECTURE.md HARNESS.md README.md SCALING.md .gitignore FRAMEWORK-MANIFEST.json setup.sh setup.ps1"
-PAYLOAD_DIRS="docs .agents/skills .agents/parts .agents/memory .agents/workflows .agents/harness .agents/rules .agents/feedback/templates scripts tests .muse"
+PAYLOAD_DIRS="docs .agents/skills .agents/memory .agents/workflows .agents/harness .agents/rules .agents/feedback/templates scripts tests .muse"
 SKIP_RX='harness-state/|\.framework-new$|\.bak$|/evidence/|__pycache__|\.pyc$|\.pytest_cache|/\.git/|node_modules|\.DS_Store|\.mypy_cache|\.ruff_cache|module-catalog\.json$|arch-baseline\.json$'
 FEEDBACK_INDEX=".agents/feedback/FEEDBACK-INDEX.md"
 

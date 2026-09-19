@@ -57,12 +57,10 @@ touches() { # touches <ext-glob> : FULL 或命中后缀即真
 
 # 1. shell 门禁（本仓脚本恒跑：scripts/ + 根 setup.sh + skill 私有脚本）
 if ls scripts/*.sh >/dev/null 2>&1; then
-  ok=1; for s in scripts/*.sh setup.sh .agents/skills/*/scripts/*.sh .agents/parts/*/scripts/*.sh; do [ -f "$s" ] || continue; bash -n "$s" || { fail "bash -n $s"; ok=0; }; done
+  ok=1; for s in scripts/*.sh setup.sh .agents/skills/*/scripts/*.sh; do [ -f "$s" ] || continue; bash -n "$s" || { fail "bash -n $s"; ok=0; }; done
   [ "$ok" -eq 1 ] && pass "bash -n (scripts + setup + skill scripts)"
   if command -v shellcheck >/dev/null 2>&1; then
-    _sc_files=(scripts/*.sh setup.sh)
-    for _g in .agents/skills/*/scripts/*.sh .agents/parts/*/scripts/*.sh; do [ -f "$_g" ] && _sc_files+=("$_g"); done
-    if shellcheck -S warning "${_sc_files[@]}" >/tmp/verify_shellcheck.log 2>&1; then pass "shellcheck (scripts + setup + skill scripts)"; else fail "shellcheck (see /tmp/verify_shellcheck.log)"; fi
+    if shellcheck -S warning scripts/*.sh setup.sh .agents/skills/*/scripts/*.sh >/tmp/verify_shellcheck.log 2>&1; then pass "shellcheck (scripts + setup + skill scripts)"; else fail "shellcheck (see /tmp/verify_shellcheck.log)"; fi
   else skipped "shellcheck not installed"; fi
 else skipped "no scripts/*.sh"; fi
 

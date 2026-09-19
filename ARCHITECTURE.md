@@ -16,8 +16,7 @@
 | `tests/` | 行为锁定 | 反向依赖 `scripts/` 产物 |
 | `scripts/` | 门禁与运维 | 承载产品逻辑 |
 | `docs/adr/` | 决策记录 | 存放需求正文（需求放 `docs/REQ-*.md`） |
-| `.agents/skills/` | 可复用技能（官方 Project skills 路径；仅装机 3 个） | 放密钥与大二进制 |
-| `.agents/parts/` | 下架技能零件库（不触发） | 同上 |
+| `.agents/skills/` | 可复用技能（官方 Project skills 路径） | 放密钥与大二进制 |
 | `.agents/memory/` | 项目记忆（官方 Project memory 路径） | 记临时进度/猜测/密钥 |
 | `.agents/workflows/` | 可复用 workflow 脚本 | 放密钥；终值非 JSON |
 | `.muse/hooks.json` | 项目 hooks 声明（官方路径，跑在沙箱外） | 放未读过的命令 |
