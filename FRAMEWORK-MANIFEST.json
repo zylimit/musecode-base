@@ -142,6 +142,6 @@
     {"path": "tests/.gitkeep", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "bytes": 0},
     {"path": "tests/fixtures/predev-bad/docs/REQ-fixture.md", "sha256": "99793961570e30ad15beaad9059da95244b0415cd754c9d140a64f6ce5f8bc4d", "bytes": 407},
     {"path": "tests/fixtures/predev-good/docs/REQ-fixture.md", "sha256": "39a47803f77a4fe20bd3c189c03e0ca67508331520fbe919766cf19355b6ad46", "bytes": 1738},
-    {"path": "tests/test_contract.py", "sha256": "328d1d53e63d5bb3254b27b3034be818144b2b4db12efc1d605102c9d5214d11", "bytes": 5667}
+    {"path": "tests/test_contract.py", "sha256": "96fe3b4b1eb29384e6a6481a293d8aefb1ece748d0fbaff2aaf81b4a03943871", "bytes": 6824}
   ]
 }

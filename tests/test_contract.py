@@ -101,6 +101,28 @@ class TestScaffoldContract(unittest.TestCase):
         r = run(["bash", "scripts/manifest.sh", "--check"])
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
+    def test_ci_arch_gate_tolerates_rc3(self):
+        # gate.yml runs steps under `bash -e`: the arch-gate block must swallow
+        # rc=3 (no catalog) itself instead of tripping errexit. Execute the real
+        # block from the workflow file.
+        text = open(os.path.join(ROOT, ".github", "workflows", "gate.yml"),
+                     encoding="utf-8").read().splitlines()
+        try:
+            i = next(n for n, l in enumerate(text) if "name: arch gate" in l)
+            j = next(n for n in range(i, len(text)) if text[n].strip() == "run: |")
+        except StopIteration:
+            self.fail("arch gate run block not found in gate.yml")
+        body = []
+        for line in text[j + 1:]:
+            if line.strip().startswith("- ") or (line and not line[0].isspace()):
+                break
+            body.append(line)
+        self.assertTrue(body, msg="empty arch gate block")
+        indent = min(len(l) - len(l.lstrip()) for l in body if l.strip())
+        script = "\n".join(l[indent:] for l in body)
+        r = run(["bash", "-e", "-c", script])
+        self.assertEqual(r.returncode, 0, msg=script + "\n" + r.stdout + r.stderr)
+
     def test_predev_lint_clean_on_repo(self):
         # CI gate.yml runs predev-lint on repo root: framework guides must not
         # collide with the REQ-/DESIGN-/ARCH-/DFX- artifact namespaces.
