@@ -1,0 +1,17 @@
+# musecode-base ignores: runtime state never enters git.
+.agents/harness-state/
+.agents/evidence/
+**/.runtime/
+.claude/.needs-review
+.needs-review
+.red-verified
+.tdd-exempt
+*.framework-new
+*.bak
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+.DS_Store

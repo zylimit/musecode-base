@@ -1,0 +1,19 @@
+{
+  "_comment": [
+    "Muse Project hooks 示例。复制为 .muse/hooks.json 后按需启用（改后开新会话生效）。",
+    "警告：hook 命令跑在 sandbox 与 approval 之外，只放读过的短命令；重逻辑放 scripts/ 由 hook 调用。",
+    "注意：官方文档未给出 hooks.json 字段级 schema，本示例的事件名取自官方 15 事件表，",
+    "matcher/handler 细节以下发 muse 版本的实际校验为准：畸形文件只会产生启动警告且该源零 handler，",
+    "不会破坏会话。启用前先在测试仓验证（见 docs/HOOKS.md）。"
+  ],
+  "hooks": [
+    {
+      "event": "SessionStart",
+      "command": "echo '[musecode] tier/pending reminders: see AGENTS.md §2 before starting work'"
+    },
+    {
+      "event": "PreToolUse",
+      "command": "echo '[musecode] PreToolUse hook placeholder: wire dangerous-command review here after schema verification'"
+    }
+  ]
+}

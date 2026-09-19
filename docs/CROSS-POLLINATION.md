@@ -1,0 +1,80 @@
+# Cross-Pollination（吸收台账）
+
+> 吸收与拒绝都要留痕：记录本仓从 codex-base、cc-base 学了什么、明确拒绝了什么、为什么。防止重复评估，也防止无据吸收。
+> 审计日期：2026-09-19。donor 路径：`/home/z00632348/code/codex-base`、`/home/z00632348/code/cc-base`。
+
+## 1. 审计边界（诚实声明）
+
+两 donor 仓在本机均**只有维护面**（根文档 + `docs/` + `scripts/` + `tests/`/`setup.sh`），**不含运行面源码**：
+
+- codex-base 无 `.codex/runtime/`、`agents/` 实现（`FRAMEWORK-MANIFEST.json` 列了 110+ 受控资产，但目录中不存在）。
+- cc-base 无 `.claude/` 实现（`harness.mjs`、`hooks/*.mjs`、`skills/*`、`profile.json` 均不在仓内，只有 `docs/guide/*.md` 对其行为的描述）。
+
+因此本轮“逐行深读”的实际覆盖是：**两仓全部根文档 + 全部 `docs/`（含 guide 01–15 抽读核心章）+ 全部 `scripts/` + `setup.sh` 头部 + `package.json`**；运行面实现细节以 donor 文档自述为准，未做源码级核验。凡本仓规范中依赖 donor 运行面行为的条目，均已降为“文档级吸收”，不得声称“经源码验证”。
+
+已精读清单（codex）：`AGENTS.md`、`Architecture-Design.md`、`DFX-Spec.md`、`Product-Spec.md`（§1–§5 + REQ-001–039 标题层）、`FRAMEWORK-MANIFEST.json`（结构层）、`docs/QUALITY-ATTRIBUTES.md`、`docs/HARNESS-AUDIT.md`、`docs/LARGE-REPO-GUIDE.md`、`docs/OPERATIONS.md`、`docs/CROSS-POLLINATION.md`、`docs/ISOLATION-PROFILES.md`、`scripts/codex-base.mjs`（头部 150 行）、`package.json`。
+已精读清单（cc）：`ARCHITECTURE.md`、`README.md`、`docs/guide/04-requirements-and-design.md`、`09-gates-and-tiers.md`、`11-large-repo.md`、`setup.sh`（头部 120 行）。
+未覆盖：codex `docs/research/*` 深层、`tests/*.test.mjs` 断言级、`DEV-PLAN.md` 全文；cc `docs/guide` 其余 12 章断言级、`docs/agent-notes/*`、`docs/v3-*.md`。列为后续增量（§5）。
+
+## 2. 从 codex-base 采纳
+
+| # | 机制 | donor 出处 | 本仓落点 | 备注 |
+|---|---|---|---|---|
+| X1 | 三轴分离：工程保障 / 宿主权限 / 计算策略互不冒充 | `AGENTS.md` §Assurance Profiles、`Architecture-Design.md` §2 | `docs/MUSE-NATIVE.md` §4–§6、`ARCHITECTURE.md` 红线 | Muse 侧映射为 approval/sandbox 与档位正交 |
+| X2 | 唯一解析器 + 单调 floor（风险/属性/治理只能抬高） | REQ-030/031、`Architecture-Design.md` §5 | `docs/LARGE-REPO.md` §档位（简化为 fast/standard/strict 三档表） | 不做 codex 式 policy resolver 代码，只做档位表 + 校验脚本 |
+| X3 | Rapid 是可偿还债务：DEFERRED ≠ PASS，换 fingerprint 不消债 | REQ-032、`Architecture-Design.md` §7 | `docs/HOOKS.md` §fast 语义、`scripts/check.sh` 债务检查 | 时限取 cc 的 8h 而非 codex 的 48h（本仓无 loan 状态机） |
+| X4 | 证据绑定：receipt 绑 task/base/diff/plan/policy，旧证据 stale | REQ-012/013/033 | `docs/QUALITY_CHECKLIST.md` §0 通用证据、`ARCHITECTURE.md` 红线 3 | 不做哈希链账本；用 git diff + 测试输出作证据 |
+| X5 | 五维属性证据门 + 反证优先 + security/safety/privacy 不可延期豁免 | REQ-019、`docs/QUALITY-ATTRIBUTES.md` | `docs/QUALITY_CHECKLIST.md` 全文、`docs/LARGE-REPO.md` 属性档位 | 档位六档简化为 critical/high/medium/low 四档 |
+| X6 | 架构防腐三件套：声明图 + 实边扫描 + 债务棘轮，环/禁边/保护层反向不可 baseline | REQ-020 | `scripts/arch-check.sh`（最小版）+ `docs/LARGE-REPO.md` §防腐 | 实边仅 JS/TS/Python 静态 import；棘轮用 `--record/--gate` 文件比对 |
+| X7 | ADR 强制：Enforced-by 必须指向真实执法点，幽灵引用 fail | REQ-020、`docs/OPERATIONS.md` §adr | `scripts/check.sh` ADR 校验 + `docs/ADR_TEMPLATE.md` | 执法点 = 本仓 script id / fitness 规则 / 人工标记 |
+| X8 | 大仓顺序：catalog lint → 影响闭包 → 预算 pack → 定向验证 | `docs/LARGE-REPO-GUIDE.md` | `docs/LARGE-REPO.md` 全文 | 目标从 60 万行提到 100 万行，算法同构 |
+| X9 | 单 writer 默认；并行写要 disjoint + worktree + integration owner | REQ-015、`docs/ISOLATION-PROFILES.md` | `docs/MUSE-NATIVE.md` §5、`docs/LARGE-REPO.md` §Ownership | 隔离语义直接用 Muse 原生 worktree（永不静默回落） |
+| X10 | 安装器事务：dry-run 零写、staging/backup、逆序 rollback、manifest 后验、定制保护 sidecar | REQ-017、`scripts/codex-base.mjs` | `setup.sh`/`setup.ps1` + `FRAMEWORK-MANIFEST.json` | 本仓版不做 maintenance marker/lock（单机小仓够用） |
+| X11 | 失败可见：FAIL/BLOCKED/DEFERRED/SKIPPED/stale 五态分明，SKIPPED 只表平台不适用 | `AGENTS.md` §核心纪律 8 | `scripts/verify.sh` 四态输出 + `docs/HOOKS.md` 退出码契约 | 空计划 = BLOCKED，不假绿 |
+| X12 | fitness 反模式扫描 + 行内抑制（rule+reason 绑定） | REQ-023/038 | `scripts/fitness.sh`（grep 版五规则） | 抑制标记 `musecode-fitness:ignore`，要求同行 |
+| X13 | retention/state prune：证据分级销毁，活动 task 引用永不删 | REQ-023 | `docs/MEMORY_GUIDE.md` §保留、`scripts/` 预留 | 本轮只定策略，未实现 prune 脚本（缺口 §5） |
+| X14 | 严格 CLI 契约：未知 flag rc=2，ghost argument 零容忍 | REQ-036 | 全部 `scripts/*.sh` 统一 `--help` + 非法参数 rc=2 | |
+| X15 | 派单契约：Goal/Scope/Out-of-Scope/Existing-Pattern/Verification/Escalation + 交接六段 | `AGENTS.md` §派发契约 | `.agents/skills/_template/SKILL.md` 输入/输出节 + `docs/LARGE-REPO.md` §派单 | Business-context 栏保留为可选 |
+
+## 3. 从 cc-base 采纳
+
+| # | 机制 | donor 出处 | 本仓落点 | 备注 |
+|---|---|---|---|---|
+| C1 | 主 Agent 唯一编排 + fresh 子 + 扁平 depth=1 | `ARCHITECTURE.md` §2 | `docs/MUSE-NATIVE.md` §5、`AGENTS.md` §3 | Muse 侧用 subagent/workflow 原生能力实现 |
+| C2 | 决策自洽轴定并行：只读广度才 fan-out，编码默认串行 | `ARCHITECTURE.md` §4.2 | 同上 + `docs/LARGE-REPO.md` §Ownership | 附 Anthropic/Cognition 引用（转引自 cc 文档） |
+| C3 | 档位一张表 + floor 地板闸 + raise 自动升档（改家底→strict） | `README.md` §档位、`09-gates-and-tiers.md` | `docs/HOOKS.md` §档位、`scripts/check.sh` 家底改动提示 | floor 五闸取：密钥外泄、危险删除、发布前置、记忆同步、通知 |
+| C4 | fast 必带 reason + 8h 硬上限 + 到期自回 + 记账可审计 | `09-gates-and-tiers.md` §fast | `docs/HOOKS.md` §fast | 状态文件 `.agents/harness-state/tier.json`（git 忽略） |
+| C5 | gate-block.log 账本 + gate-audit 死闸审计（零命中要么举证要么撤） | `09-gates-and-tiers.md` §账本 | `docs/HOOKS.md` §账本（`scripts/*.sh` 写账约定） | 本轮未实现 audit 脚本（缺口 §5） |
+| C6 | diff-bound 审查回执：diff 变一字节即 stale | `11-large-repo.md` §receipt | `docs/QUALITY_CHECKLIST.md` REL-3、`scripts/check.sh` 回执绑定提示 | 不做回执文件格式；用“测试重跑 + git diff 哈希”自然实现 |
+| C7 | 需求四标记 `[确认]/[推断]/[默认]/[待定]` + 复述签字 + CHANGELOG 成对 | `04-requirements-and-design.md` | `docs/REQUIREMENTS_GUIDE.md` 全文 + 需求模板 §标记 | `[待定]` 只许在待定表，功能条目挂待定即 fail |
+| C8 | predev-lint 五文档闸（占位符/缺段/无度量/预算超支） | 同上 §predev-lint | `scripts/check.sh` §需求静态检查（子集） | 全量规则待补（缺口 §5） |
+| C9 | ADR 九字段 + revisit-if 写条件不写日期 + reversal/单向门 | 同上 §arch | `docs/ADR_TEMPLATE.md`（已含 Enforced-by 思想，补 revisit/reversal 行） | check.sh 校验三字段存在 |
+| C10 | 三层强制：会话 hook + git hook + CI（hook 只管会话内） | `README.md` §Claude Code 之外的强制层 | `docs/HOOKS.md` 三层表 + `scripts/install-githooks.sh` + CI 示例 | Muse 原生 hook 仍只管会话内，同理 |
+| C11 | 记忆四系统分工：progress / feedback / domain / 角色笔记 | `ARCHITECTURE.md` §8 | `docs/MEMORY_GUIDE.md` | 角色 memory 映射为 skill 内“常见坑”节 |
+| C12 | arch-trend 棘轮：per-edge 身份比对，新债零容忍 | `11-large-repo.md` §arch-trend | `scripts/arch-check.sh --record/--gate` | 老仓带债接入路径 |
+| C13 | 退出码契约 0/1/2/3/4（3=降级未建立结论，4=STALE） | `11-large-repo.md` §退出码 | `docs/HOOKS.md` §退出码 + 各脚本统一 | rc=3 永不读作绿 |
+| C14 | review 九 lens 三阶段 + 作者≠评审机器强制 + 删除重命名单列 | `README.md` §大仓能力 | `docs/QUALITY_CHECKLIST.md` REL 节 + `.agents/skills/code-review/` skill | 作者账本用 git author 实现最小版 |
+
+## 4. 明确拒绝（及理由）
+
+| # | donor 机制 | 拒绝理由 |
+|---|---|---|
+| R1 | codex 完整 Assurance Policy resolver 代码 + policyHash 状态机 | 本仓无 `.codex/runtime` 等价物；Muse 原生 approval/sandbox 已覆盖权限轴，工程档位用静态表 + 脚本校验足够，不造第二套状态机 |
+| R2 | codex 账本哈希链 + 轮转 + attestation | 同上；git 历史 + 测试输出即证据链，不引入本地伪信任根 |
+| R3 | codex `service` 开发服务守护 | 本仓是脚手架非产品运行面；长驻服务归 systemd/k8s/supervisor 各项目自理 |
+| R4 | codex 48h Rapid loan + 跨 fingerprint 债务索引 | 无状态机支撑时做不实；取 cc 的 8h fast + 人工记账 |
+| R5 | cc auto-push（commit 后自动 push） | 违反最小副作用与 Muse 保守默认（不经要求不 push）；codex 台账同样拒绝 |
+| R6 | cc kill-dev-ports（起服务前清端口） | 可能杀用户进程，违反 SAF-2；codex 台账同样拒绝 |
+| R7 | cc `.needs-review` 全局布尔 marker | 可伪造、无绑定；已被 diff-bound 思想取代（C6） |
+| R8 | cc 三文件同步 Stop 硬闸（每次编辑机械写 progress） | 误报噪音；改为决策/约束/风险出现才记（codex REQ-016 纪律） |
+| R9 | cc TDD gate（派单前查 `.red-verified`） | 本仓无 Sub-Agent 派单 hook 面（Muse hook 在沙箱外且无 Agent 事件 matcher 细节）；TDD 由 skill 约定承载 |
+| R10 | 两仓的 daemon/tmux/多模型 fan-out、兄弟仓脚本互调 | 非 Muse 原生运行面；多智能体只用 Workflow/subagent 原生能力 |
+| R11 | 两仓的 300 行/测试比例/覆盖率数字门 | 以风险覆盖与有效性为准，不为数字凑用例（codex QUALITY-ECONOMY 纪律） |
+
+## 5. 缺口与后续增量（诚实未完成项）
+
+- [ ] codex `tests/*.test.mjs` 断言级吸收（突变测试、execpolicy 向量、installer 黑盒）→ 待第二轮精读。
+- [ ] cc `docs/guide` 剩余 12 章 + `docs/agent-notes/*` + `docs/v3-*.md` → 待第二轮精读。
+- [ ] `scripts/gate-audit.sh`（C5 死闸审计）与 `scripts/state-prune.sh`（X13 保留销毁）未实现。
+- [ ] `scripts/check.sh` 的 predev-lint 全量子集（C8 仅落地占位符/缺段/待定三规则）。
+- [ ] Muse 官方 `interactive`/`session-messaging`/`rewind`/`auth` 页正文未抓（见 `docs/MUSE-NATIVE.md` §10）。

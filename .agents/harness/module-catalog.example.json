@@ -1,0 +1,44 @@
+{
+  "_comment": "module-catalog 示例：复制为 .agents/harness/module-catalog.json 后按真实模块改写。riskTier/attributes 必须人工定档，机器不猜。见 docs/LARGE-REPO.md §2。",
+  "version": 1,
+  "layers": ["app", "domain", "infra"],
+  "global": ["package.json", "pyproject.toml", "tsconfig.json"],
+  "ignored": ["README.md", "docs/**", "*.md"],
+  "modules": [
+    {
+      "id": "billing",
+      "paths": ["src/billing/**"],
+      "dependsOn": ["ledger"],
+      "forbiddenDependencies": ["analytics"],
+      "layer": "domain",
+      "riskTier": "high",
+      "attributes": { "security": "critical", "privacy": "high", "reliability": "high" },
+      "verification": ["unit-billing", "sec-scan"]
+    },
+    {
+      "id": "ledger",
+      "paths": ["src/ledger/**"],
+      "dependsOn": [],
+      "layer": "domain",
+      "riskTier": "medium",
+      "attributes": { "reliability": "high" },
+      "verification": ["unit-ledger"]
+    },
+    {
+      "id": "analytics",
+      "paths": ["src/analytics/**"],
+      "dependsOn": [],
+      "layer": "app",
+      "riskTier": "low",
+      "attributes": { "privacy": "medium" },
+      "verification": ["unit-analytics"]
+    }
+  ],
+  "checks": {
+    "unit-billing": { "command": "pytest tests/billing -q", "attributes": ["reliability"] },
+    "unit-ledger": { "command": "pytest tests/ledger -q", "attributes": ["reliability"] },
+    "unit-analytics": { "command": "pytest tests/analytics -q", "attributes": [] },
+    "sec-scan": { "command": "semgrep scan --error --config auto src/billing", "class": "security", "attributes": ["security"] }
+  },
+  "contextPack": { "maxTotalChars": 120000, "maxFiles": 40, "maxFileChars": 6000, "maxDiffChars": 40000 }
+}
