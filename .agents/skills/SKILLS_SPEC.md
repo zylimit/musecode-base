@@ -66,6 +66,24 @@
 | 技能 | 说明 | 状态 |
 |---|---|---|
 | `_template` | 模板，非可执行技能 | 常驻 |
-| `code-review` | 结构化三阶段评审 + 作者≠评审 + 删除重命名单列 | 可用 |
+| `product-spec-builder` | 需求访谈四线/五铁律/四把刀 + 复述签字 + 迭代 CHANGELOG | 可用 |
+| `arch-designer` | S/M/L + 事件检验边界 + 质量场景比较 + ADR 九字段 | 可用 |
+| `dfx-designer` | 损失推导 + 13 维定档 + 测量语义 + 威胁/预算表 | 可用 |
+| `design-brief-builder` | 形态识别 + 感受翻译 + 二选一 + 双产物 | 可用 |
+| `design-maker` | 两遍法 + 单文件离线稿 + 客观验收 | 可用 |
+| `dev-planner` | 价值排序切片 + 验收反推 + spike + 并行 disjoint | 可用 |
+| `dev-builder` | TDD + 最小改动 + Phase 门禁链 + 收口扫描 | 可用 |
+| `bug-fixer` | 稳定复现 + 区分实验 + 红锁 + 三次熔断 | 可用 |
+| `code-review` | 三阶段九 lens + 删除单列 + 作者≠评审 | 可用 |
+| `test-builder` | 风险分级 + 独立预期 + 老化纪律 + 门禁接入 | 可用 |
+| `red-blue-review` | Blue 自证→Red 四 lens→Judge 三态 + 证据包脚本 | 可用 |
+| `release-builder` | 四要素 + 隐私审计 + 部署三件套 + 产物四环节 | 可用 |
+| `branch-finisher` | 三类环境 + 测试闸 + 条件菜单 + baseline 对照 | 可用 |
+| `large-repo-harness` | catalog/影响/预算/定向验证/防腐索引 skill | 可用 |
+| `skill-builder` | 按交互模式参照 + 场景对照 + 来源清单 | 可用 |
+| `feedback-writer` | 五类信号 + 去重 + 效能评分 + pending | 可用 |
+| `evolution-engine` | 毕业/优化/新 skill 三扫描 + 实证门槛（只读） | 可用 |
+| `progress-recorder` | 语义抽取 + 置信闸 + 取代链 + 归档 | 可用 |
+| `domain-rulings` | 四象限分诊 + 入库两问 + 七栏 + 老化 | 可用 |
 
 > 新增行即注册，无需中心清单文件。

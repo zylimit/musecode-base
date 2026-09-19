@@ -5,16 +5,16 @@
 
 ## 1. 审计边界（诚实声明）
 
-两 donor 仓在本机均**只有维护面**（根文档 + `docs/` + `scripts/` + `tests/`/`setup.sh`），**不含运行面源码**：
+**更正记录（2026-09-19）**：初版称"两 donor 仓无 skill 源码"，系用 `ls -R`（不显示 dotfiles）盘点所致的**误判**，已纠正。实际两仓均含完整 skill 源码：`cc-base/.claude/skills/`（18 个）与 `codex-base/.agents/skills/`（17 个）。
 
-- codex-base 无 `.codex/runtime/`、`agents/` 实现（`FRAMEWORK-MANIFEST.json` 列了 110+ 受控资产，但目录中不存在）。
-- cc-base 无 `.claude/` 实现（`harness.mjs`、`hooks/*.mjs`、`skills/*`、`profile.json` 均不在仓内，只有 `docs/guide/*.md` 对其行为的描述）。
+当前覆盖（源码级）：
 
-因此本轮“逐行深读”的实际覆盖是：**两仓全部根文档 + 全部 `docs/`（含 guide 01–15 抽读核心章）+ 全部 `scripts/` + `setup.sh` 头部 + `package.json`**；运行面实现细节以 donor 文档自述为准，未做源码级核验。凡本仓规范中依赖 donor 运行面行为的条目，均已降为“文档级吸收”，不得声称“经源码验证”。
+- **35 个 SKILL.md 核心**（约 4000 行）已逐个通读并蒸馏为本仓 19 个 skill（并集，见 §6）。
+- **19 个机制 references** 已通读并焊入蒸馏 skill 或指南：访谈原理/引导菜单/自检清单/0-1 流程、质量地板、风格词汇、正常对照与诊断实验、采用与退役、产物与恢复、交互设计、风险与老化、独立预期、验收与依赖、决策评价、测量方法、发现方法（清单见 §6）。
+- 整件采用 6 份：质量地板、风格词汇、口径 canon、计划模板、CHANGELOG 节、skill description lint。
+- 先前精读的根文档与 `docs/`（codex：AGENTS/Architecture/DFX/Product-Spec/MANIFEST/QUALITY/HARNESS-AUDIT/LARGE-REPO/OPERATIONS/CROSS-POLLINATION/ISOLATION；cc：ARCHITECTURE/README/guide-04/09/11）继续有效。
 
-已精读清单（codex）：`AGENTS.md`、`Architecture-Design.md`、`DFX-Spec.md`、`Product-Spec.md`（§1–§5 + REQ-001–039 标题层）、`FRAMEWORK-MANIFEST.json`（结构层）、`docs/QUALITY-ATTRIBUTES.md`、`docs/HARNESS-AUDIT.md`、`docs/LARGE-REPO-GUIDE.md`、`docs/OPERATIONS.md`、`docs/CROSS-POLLINATION.md`、`docs/ISOLATION-PROFILES.md`、`scripts/codex-base.mjs`（头部 150 行）、`package.json`。
-已精读清单（cc）：`ARCHITECTURE.md`、`README.md`、`docs/guide/04-requirements-and-design.md`、`09-gates-and-tiers.md`、`11-large-repo.md`、`setup.sh`（头部 120 行）。
-未覆盖：codex `docs/research/*` 深层、`tests/*.test.mjs` 断言级、`DEV-PLAN.md` 全文；cc `docs/guide` 其余 12 章断言级、`docs/agent-notes/*`、`docs/v3-*.md`。列为后续增量（§5）。
+未覆盖（诚实缺口，§5）：两仓 `references/` 中 30+ 长案例/问题库/大模板（售后全套范例、双问题库 45KB、原型构造、视觉方法等）仅建索引未逐行读；codex `docs/research/*`、`tests/*.test.mjs` 断言级；cc `docs/guide` 其余 12 章断言级、`agent-notes/*`、`v3-*.md`；两仓 `.codex/runtime`、`.claude/hooks` 等运行面实现（本次未列入）。
 
 ## 2. 从 codex-base 采纳
 
@@ -78,3 +78,33 @@
 - [ ] `scripts/gate-audit.sh`（C5 死闸审计）与 `scripts/state-prune.sh`（X13 保留销毁）未实现。
 - [ ] `scripts/check.sh` 的 predev-lint 全量子集（C8 仅落地占位符/缺段/待定三规则）。
 - [ ] Muse 官方 `interactive`/`session-messaging`/`rewind`/`auth` 页正文未抓（见 `docs/MUSE-NATIVE.md` §10）。
+- [ ] skill 支撑文件第二轮：双问题库（45KB）、售后全套范例、原型构造、视觉方法、协作追演、教学案例等 30+ 文件仅索引（见 §6）。
+- [ ] `design-maker` 的 UI 审计脚本（`ui-audit.mjs` 等价物）未实现；`red-blue-review` 证据脚本已落地最小版。
+
+## 6. Skill 吸收台账（2026-09-19 精读蒸馏）
+
+donor 并集 19 个 skill（cc 独有 domain-rulings/red-blue-review，codex 独有 large-repo-harness），本仓 19/19 全落地。
+
+| 本仓 skill | cc SKILL.md | codex SKILL.md | 机制 references（已读√/索引○） | 整件采用 |
+|---|---|---|---|---|
+| product-spec-builder | √181行 | √155行 | √访谈原理/引导菜单/自检清单/0-1/发现方法；○问题库/模板/售后范例 | CHANGELOG 节→REQ 模板 §8；单元测试清单→指南 §7 |
+| arch-designer | √174行 | √179行 | √决策评价；○协作追演/模板/范例 | — |
+| dfx-designer | √157行 | √162行 | √测量方法；○模板/范例 | — |
+| design-brief-builder | √122行 | √119行 | √风格词汇（整件）；○问题库/模板/范例/视觉方法 | 风格词汇→`docs/DESIGN-VOCABULARY.md` |
+| design-maker | √184行 | √123行 | √质量地板（整件）；○原型构造/试走 | 质量地板→`docs/UI-QUALITY-FLOOR.md` |
+| dev-planner | √ | √ | √验收与依赖 | 计划模板→`docs/PLAN_TEMPLATE.md` |
+| dev-builder | √ | √ | ○状态结果链/教学案例 | — |
+| bug-fixer | √50行 | √79行 | √正常对照与诊断实验 | — |
+| code-review | √57行 | √130行 | √独立预期（与 test 共用） | — |
+| test-builder | √51行 | √95行 | √风险与老化/独立预期；○脚手架模板 | — |
+| red-blue-review | √104行 | —（无） | —（无支撑文件） | 证据包脚本自写（行为对齐 donor） |
+| release-builder | √58行 | √79行 | √产物与恢复 | — |
+| branch-finisher | √103行 | √49行 | —（无支撑文件） | — |
+| large-repo-harness | —（无） | √133行 | —（无支撑文件） | catalog 示例（已在 `.agents/harness/`） |
+| skill-builder | √139行 | √214行 | √交互设计；○行为 smoke | description-lint→`scripts/skill-lint.sh` |
+| feedback-writer | √79行 | √89行 | —（无支撑文件） | feedback 双模板→`.agents/feedback/` |
+| evolution-engine | √72行 | √95行 | √采用与退役 | — |
+| progress-recorder | √145行 | √165行 | —（无支撑文件） | — |
+| domain-rulings | √100行 | —（无） | √口径规则正文（整件蒸馏） | canon→`.agents/rules/domain-rulings.md` |
+
+○ 索引未读清单（路径精确，需时再读）：`product-spec-builder/{references/question-bank.md,templates/product-spec-template.md,examples/after-sales-dispatch.md}`、`design-brief-builder/{references/question-bank.md,workflow-0-1.md,templates/*,examples/*}`、`arch-designer/{references/collaboration-walkthrough.md,templates/*,examples/*}`、`dfx-designer/{templates/*,examples/*}`、`design-maker/references/prototype-construction.md`、`design-brief-builder/references/visual-methods.md`、`dev-builder/references/{state-and-result-chain.md,async-proofreading-case.md}`、`dev-planner` codex 模板、`test-builder/templates/test-scaffold.md`、`skill-builder/scripts/test-skill-behavior.sh`、教学案例（reservation/discovery/direction）。

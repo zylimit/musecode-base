@@ -31,7 +31,7 @@ check_req() { # check_req <file>
   [ -f "$f" ] || { err "REQ_MISSING" "$f not found"; return; }
   # PLACEHOLDER（待定表内的“待定”二字放过：先删待定表节再扫）
   local body; body="$(awk '/^## .*待定/{flag=1} /^## /{if ($0 !~ /待定/) flag=0} !flag' "$f")"
-  if printf '%s' "$body" | grep -qE 'NNNN|YYYY-MM-DD|<slug>|TBD|待补|TODO\(req\)'; then # musecode-fitness:ignore (this line is the placeholder pattern, not a deferral)
+  if printf '%s' "$body" | grep -qE 'NNNN|YYYY-MM-DD|<slug>|TBD|待补|TODO\(req\)'; then # musecode-fitness:ignore todo-without-owner reason="this line is the placeholder pattern, not a deferral"
     err "PLACEHOLDER" "$f 含占位残留"
   fi
   # PENDING_IN_REQUIREMENT：功能需求节内出现 [待定]
@@ -67,9 +67,46 @@ check_adr() { # check_adr <file>
   grep -qiE 'reversal|撤回|回滚' "$f" || warn "ADR_REVERSAL_MISSING" "$f 缺 reversal/撤回代价"
 }
 
+check_trace() { # check_trace: requirement-trace.json 存在即验（需求→路径+检查的追溯闭环）
+  local t=".agents/harness/requirement-trace.json"
+  [ -f "$t" ] || return 0
+  CHECKED=$((CHECKED+1))
+  python3 - "$t" <<'PY' || ERR=$((ERR+1))
+import json, re, sys
+from pathlib import Path
+try:
+    trace = json.load(open(sys.argv[1], encoding="utf-8"))
+except Exception as e:
+    print(f"ERROR[TRACE_PARSE]: {e}")
+    sys.exit(1)
+known_ids = set()
+for req in Path("docs").glob("REQ-*.md"):
+    known_ids.update(re.findall(r"\b(?:FR|R|SC|OUT|SCOPE|Q)-\d+\b", req.read_text(encoding="utf-8")))
+known_checks = set()
+try:
+    cat = json.load(open(".agents/harness/module-catalog.json", encoding="utf-8"))
+    known_checks = set((cat.get("checks") or {}).keys())
+except Exception:
+    pass
+bad = 0
+for entry in trace.get("trace", []):
+    rid = entry.get("requirement", "")
+    if rid and rid not in known_ids:
+        print(f"ERROR[TRACE_GHOST_REQ]: {rid} 在 REQ 中不存在"); bad = 1
+    for p in entry.get("paths", []):
+        if not Path(p).exists():
+            print(f"ERROR[TRACE_GHOST_PATH]: {rid} -> {p} 不存在"); bad = 1
+    for c in entry.get("checks", []):
+        if known_checks and c not in known_checks and not Path(f"scripts/{c}").exists():
+            print(f"ERROR[TRACE_GHOST_CHECK]: {rid} -> {c} 未知检查"); bad = 1
+sys.exit(bad)
+PY
+}
+
 if [ -n "$REQ_ONLY" ]; then
   check_req "$REQ_ONLY"
 else
+  check_trace
   found=0
   for f in docs/REQ-*.md; do [ -e "$f" ] || continue; found=1; check_req "$f"; done
   for f in docs/adr/[0-9]*-*.md; do [ -e "$f" ] || continue; found=1; check_adr "$f"; done

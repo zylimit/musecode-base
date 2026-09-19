@@ -30,13 +30,28 @@ for f in scripts/verify.sh scripts/check.sh scripts/fitness.sh scripts/arch-chec
   if [ -f "$f" ]; then ok "exists $f"; else bad "missing $f"; fi
 done
 
+# 1c. skill 全量必备文件（2026-09-19 追加，只增不减）
+for f in scripts/skill-lint.sh docs/PLAN_TEMPLATE.md docs/UI-QUALITY-FLOOR.md \
+         docs/DESIGN-VOCABULARY.md .agents/rules/domain-rulings.md \
+         .agents/feedback/FEEDBACK-INDEX.md \
+         .agents/feedback/templates/feedback-topic-template.md \
+         .agents/skills/red-blue-review/scripts/evidence.sh; do
+  if [ -f "$f" ]; then ok "exists $f"; else bad "missing $f"; fi
+done
+for s in product-spec-builder arch-designer dfx-designer design-brief-builder design-maker \
+         dev-planner dev-builder bug-fixer code-review test-builder red-blue-review \
+         release-builder branch-finisher large-repo-harness skill-builder feedback-writer \
+         evolution-engine progress-recorder domain-rulings; do
+  if [ -f ".agents/skills/$s/SKILL.md" ]; then ok "skill $s"; else bad "missing skill $s"; fi
+done
+
 # 2. 模板非空
-for f in docs/ADR_TEMPLATE.md docs/REQUIREMENTS_TEMPLATE.md .agents/skills/_template/SKILL.md; do
+for f in docs/ADR_TEMPLATE.md docs/REQUIREMENTS_TEMPLATE.md docs/PLAN_TEMPLATE.md .agents/skills/_template/SKILL.md .agents/feedback/templates/feedback-topic-template.md; do
   if [ -s "$f" ]; then ok "non-empty $f"; else bad "empty $f"; fi
 done
 
 # 3. shell 语法（scripts/ + 根 setup.sh）
-for s in scripts/*.sh setup.sh; do
+for s in scripts/*.sh setup.sh .agents/skills/*/scripts/*.sh; do
   [ -e "$s" ] || continue
   if bash -n "$s"; then ok "bash -n $s"; else bad "syntax $s"; fi
 done

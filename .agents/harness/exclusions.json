@@ -1,0 +1,18 @@
+{
+  "_comment": "不入清单、不随装的真相源。setup.sh/setup.ps1/manifest.sh 三处的 SKIP 口径必须与此一致，由 scripts/gen-exclusions.sh --check 校验。",
+  "version": 1,
+  "exclusions": [
+    "harness-state/",
+    ".framework-new",
+    ".bak",
+    "/evidence/",
+    "__pycache__",
+    ".pyc",
+    ".pytest_cache",
+    "/.git/",
+    "node_modules",
+    ".DS_Store",
+    ".mypy_cache",
+    ".ruff_cache"
+  ]
+}

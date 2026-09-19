@@ -26,6 +26,7 @@
 - 2026-09-19：`CROSS-POLLINATION.md`（X1–X15/C1–C14/R1–R11）+ 需求/大仓/记忆三指南 + 示例 ADR。
 - 2026-09-19：门禁脚本全落地（verify/check/fitness/arch-check/install-githooks/manifest）+ 契约测试 12 项 + 安装器双平台 + git init + hooks 安装。全绿：smoke 57/0、verify PASS、pytest 12/12、shellcheck clean。
 - 2026-09-19：首推 `github.com/zylimit/musecode-base`（空仓检视确认后 `main` 首 commit + push；P5 关闭）。
+- 2026-09-19：19/19 skill 全量蒸馏落地 + 19 机制文件精读 + 6 整件采用（地板/词汇/口径 canon/计划模板/CHANGELOG/lint），见台账 §6。
 
 ## 待办
 
@@ -37,6 +38,6 @@
 
 ## Risks
 
-- R1：donor 仓无运行面源码（`.codex/runtime`、`.claude/harness` 均不在仓内），吸收止于文档+脚本+测试层——已在台账 §1 声明。
+- R1：donor skill 源码已确认存在并精读（35 核心 + 19 机制文件，见台账 §6）；剩余 30+ 长案例/问题库仅索引。运行面实现（`.codex/runtime`、`.claude/hooks`）本次未列入。
 - R2：hooks.json 官方无字段级 schema，示例未经 `muse` 实测——以骨架 + 警告交付，未启用。
 - R3：100 万行治理算法（影响闭包/context pack）有文档无运行时——catalog/impact 的可执行引擎是下一阶段。

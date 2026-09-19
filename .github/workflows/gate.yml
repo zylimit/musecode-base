@@ -1,0 +1,49 @@
+name: gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: smoke gate
+        run: bash scripts/smoke.sh
+      - name: verify gate
+        run: bash scripts/verify.sh
+      - name: req-adr check
+        run: bash scripts/check.sh
+      - name: predev lint
+        run: node scripts/predev-lint.mjs
+      - name: plan lint
+        run: bash scripts/plan-lint.sh
+      - name: skill lint
+        run: bash scripts/skill-lint.sh
+      - name: arch gate
+        run: |
+          bash scripts/arch-check.sh --gate
+          rc=$?
+          if [ "$rc" -eq 3 ]; then echo "arch: no catalog (skipped, not passed)"; exit 0; fi
+          exit "$rc"
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: powershell parse
+        shell: pwsh
+        run: |
+          $errs = $null
+          [void][System.Management.Automation.PSParser]::Tokenize((Get-Content -Raw setup.ps1), [ref]$errs)
+          if ($errs.Count -gt 0) { $errs | ForEach-Object { Write-Output $_.Message }; exit 1 }
+          Write-Output "setup.ps1: parse OK"

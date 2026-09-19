@@ -22,9 +22,13 @@ class TestScaffoldContract(unittest.TestCase):
         self.assertIn("ALL SMOKE CHECKS PASSED", r.stdout)
 
     def test_scripts_bash_syntax(self):
+        import glob as _glob
         paths = [f"scripts/{n}" for n in os.listdir(os.path.join(ROOT, "scripts"))
                  if n.endswith(".sh")]
         paths.append("setup.sh")
+        paths += [os.path.relpath(p, ROOT) for p in
+                  _glob.glob(os.path.join(ROOT, ".agents", "skills", "*",
+                                           "scripts", "*.sh"))]
         for p in paths:
             r = run(["bash", "-n", p])
             self.assertEqual(r.returncode, 0, msg=p)
@@ -40,10 +44,32 @@ class TestScaffoldContract(unittest.TestCase):
 
     def test_templates_nonempty(self):
         for p in ["docs/ADR_TEMPLATE.md", "docs/REQUIREMENTS_TEMPLATE.md",
-                  ".agents/skills/_template/SKILL.md"]:
+                  "docs/PLAN_TEMPLATE.md",
+                  ".agents/skills/_template/SKILL.md",
+                  ".agents/feedback/templates/feedback-topic-template.md"]:
             fp = os.path.join(ROOT, p)
             self.assertTrue(os.path.isfile(fp), msg=p)
             self.assertGreater(os.path.getsize(fp), 0, msg=p)
+
+    def test_skill_lint_passes(self):
+        r = run(["bash", "scripts/skill-lint.sh"])
+        self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
+
+    def test_skill_count(self):
+        base = os.path.join(ROOT, ".agents", "skills")
+        skills = [e for e in os.listdir(base)
+                  if os.path.isdir(os.path.join(base, e)) and not e.startswith("_")]
+        self.assertEqual(len(skills), 19, msg=sorted(skills))
+        for e in skills:
+            text = open(os.path.join(base, e, "SKILL.md"), encoding="utf-8").read()
+            self.assertIn("## Donor 出处", text, msg=e)
+
+    def test_adopted_docs_present(self):
+        for p in ["docs/UI-QUALITY-FLOOR.md", "docs/DESIGN-VOCABULARY.md",
+                  ".agents/rules/domain-rulings.md",
+                  ".agents/feedback/FEEDBACK-INDEX.md",
+                  ".agents/skills/red-blue-review/scripts/evidence.sh"]:
+            self.assertTrue(os.path.isfile(os.path.join(ROOT, p)), msg=p)
 
     def test_no_forbidden_skills_path(self):
         # ADR-0001: .muse/skills must never be reborn.

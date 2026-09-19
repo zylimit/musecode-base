@@ -18,6 +18,7 @@ bash scripts/smoke.sh
 |---|---|---|
 | 1 | 必备文件存在（协议×3、README、模板×2、HOOKS、QUALITY_CHECKLIST、MUSE-NATIVE、SCALING、SMOKE、SKILLS_SPEC、SKILL 模板） | 有文件缺失，按 FAIL 行补文件 |
 | 1b | 扩展必备文件（门禁脚本×6、安装器×2、manifest、契约测试、指南×4、示例 ADR/skill/memory/workflow/catalog/hooks 示例） | 同上 |
+| 1c | skill 全量文件（19 skills + skill-lint + 计划模板 + 地板/词汇 + 口径 canon + feedback 模板/索引 + 证据脚本） | 同上 |
 | 2 | 模板非空 | 模板被清空，恢复内容 |
 | 3 | `bash -n scripts/*.sh` | 门禁脚本自身语法错，先修脚本 |
 | 4 | 目录结构（src/tests/docs/adr/scripts/.agents/skills/.agents/memory/.agents/workflows） | 有目录被删，恢复 |

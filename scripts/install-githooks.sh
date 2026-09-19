@@ -1,63 +1,44 @@
 #!/bin/bash
-# install-githooks.sh — 安装/卸载本仓 git hooks（只写本仓 .git/hooks，不碰 core.hooksPath）。
+# install-githooks.sh — 安装/卸载本仓 git hooks（经 core.hooksPath 指向版本化的 scripts/githooks/）。
+# 来源模型：cc-base githooks（版本化单源 + 占用拒绝）。
 # 用法：bash scripts/install-githooks.sh on|off|status
-#   on:     写入 pre-commit（smoke + staged fitness）与 pre-push（smoke + verify）
-#   off:    仅删除由本脚本安装的钩子（含 MUSecode 标记的才删，不动用户自有钩子）
+#   on:     core.hooksPath -> scripts/githooks（已有非本仓值则拒绝，不覆盖 husky 等）
+#   off:    仅当 core.hooksPath 指向本仓时才 unset
 #   status: 报告安装态
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT" || exit 2
-MARK="# musecode-base managed hook"
+TARGET="scripts/githooks"
 
 cmd="${1:-status}"
 case "$cmd" in on|off|status) ;; *) echo "usage: install-githooks.sh on|off|status" >&2; exit 2;; esac
 
-if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  echo "install-githooks: not a git repository (run git init first)" >&2; exit 2; fi
-HOOKS_DIR="$(git rev-parse --git-dir)/hooks"
-mkdir -p "$HOOKS_DIR"
-
-is_managed() { [ -f "$1" ] && grep -qF "$MARK" "$1" 2>/dev/null; }
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "install-githooks: 非 git 仓（先 git init）" >&2; exit 2; }
+cur="$(git config --local core.hooksPath 2>/dev/null || true)" # musecode-fitness:ignore no-silent-failure reason="absent config means empty string, handled below"
 
 if [ "$cmd" = "status" ]; then
-  for h in pre-commit pre-push; do
-    if is_managed "$HOOKS_DIR/$h"; then echo "$h: installed (managed)";
-    elif [ -f "$HOOKS_DIR/$h" ]; then echo "$h: present (user-owned, untouched)";
-    else echo "$h: absent"; fi
-  done
+  if [ "$cur" = "$TARGET" ]; then echo "githooks: installed (core.hooksPath=$TARGET)";
+  elif [ -n "$cur" ]; then echo "githooks: occupied by $cur (refusing to touch)";
+  else echo "githooks: absent"; fi
   exit 0
 fi
 
 if [ "$cmd" = "off" ]; then
-  for h in pre-commit pre-push; do
-    if is_managed "$HOOKS_DIR/$h"; then rm -f "$HOOKS_DIR/$h"; echo "$h: removed"; else echo "$h: kept (not managed)"; fi
-  done
+  if [ "$cur" = "$TARGET" ]; then git config --local --unset core.hooksPath; echo "githooks: uninstalled";
+  else echo "githooks: kept (not ours: ${cur:-absent})"; fi
   exit 0
 fi
 
 # on
-cat > "$HOOKS_DIR/pre-commit" <<EOF
-#!/bin/bash
-$MARK (pre-commit: smoke + staged fitness)
-set -uo pipefail
-ROOT="\$(git rev-parse --show-toplevel)"
-cd "\$ROOT" || exit 2
-bash scripts/smoke.sh || exit 2
-STAGED="\$(git diff --cached --name-only --diff-filter=ACM | tr '\n' ',' | sed 's/,\$//')"
-if [ -n "\$STAGED" ]; then
-  bash scripts/fitness.sh --paths "\$STAGED" || exit 2
+if [ -n "$cur" ] && [ "$cur" != "$TARGET" ]; then
+  echo "install-githooks: core.hooksPath 已被占用（$cur），拒绝覆盖。请手动合并后再 on。" >&2; exit 2
 fi
-EOF
-cat > "$HOOKS_DIR/pre-push" <<EOF
-#!/bin/bash
-$MARK (pre-push: smoke + verify)
-set -uo pipefail
-ROOT="\$(git rev-parse --show-toplevel)"
-cd "\$ROOT" || exit 2
-bash scripts/smoke.sh || exit 2
-bash scripts/verify.sh || exit 2
-EOF
-chmod +x "$HOOKS_DIR/pre-commit" "$HOOKS_DIR/pre-push"
-echo "pre-commit: installed (smoke + staged fitness)"
-echo "pre-push: installed (smoke + verify)"
+for h in pre-commit pre-push commit-msg; do
+  [ -x "$TARGET/$h" ] || { echo "install-githooks: $TARGET/$h 缺失或无执行位" >&2; exit 2; }
+done
+git config --local core.hooksPath "$TARGET"
+echo "githooks: installed (core.hooksPath=$TARGET)"
+echo "  pre-commit: smoke + staged-check + staged fitness"
+echo "  pre-push:   smoke + verify（文档-only 快速通道）"
+echo "  commit-msg: 首行宽度 + 无信息词"

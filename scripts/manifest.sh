@@ -25,7 +25,7 @@ list_files() {
   # 恒用 find，不用 git ls-files：unborn 空仓、部分暂存、未跟踪新文件三种情况下 git 口径都会漏文件；
   # manifest 要的是“工作树里有什么”，新文件必须迫使 --write 重审。
   find AGENTS.md ARCHITECTURE.md HARNESS.md README.md SCALING.md docs scripts src tests .agents .muse setup.sh setup.ps1 .gitignore -type f 2>/dev/null \
-    | grep -vE "^FRAMEWORK-MANIFEST.json$|harness-state/|\.framework-new$|\.bak$|/evidence/|__pycache__|\.pyc$|\.pytest_cache|/\.git/|node_modules|\.DS_Store" | LC_ALL=C sort -u
+    | grep -vE "^FRAMEWORK-MANIFEST.json$|harness-state/|\.framework-new$|\.bak$|/evidence/|__pycache__|\.pyc$|\.pytest_cache|/\.git/|node_modules|\.DS_Store|\.mypy_cache|\.ruff_cache" | LC_ALL=C sort -u
 }
 gen() {
   printf '{\n  "version": 1,\n  "hashAlgorithm": "sha256-lf",\n  "files": [\n'

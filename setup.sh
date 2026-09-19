@@ -27,7 +27,7 @@ esac
 # 分发面（运行态与私产永不进入）
 PAYLOAD="AGENTS.md ARCHITECTURE.md HARNESS.md README.md SCALING.md .gitignore FRAMEWORK-MANIFEST.json setup.sh setup.ps1"
 PAYLOAD_DIRS="docs .agents/skills .agents/memory .agents/workflows .agents/harness scripts src tests .muse"
-SKIP_RX='harness-state/|\.framework-new$|\.bak$|/evidence/|__pycache__|\.pyc$|\.pytest_cache|/\.git/|node_modules|\.DS_Store'
+SKIP_RX='harness-state/|\.framework-new$|\.bak$|/evidence/|__pycache__|\.pyc$|\.pytest_cache|/\.git/|node_modules|\.DS_Store|\.mypy_cache|\.ruff_cache'
 
 C_CREATE=0; C_UPDATE=0; C_CONFLICT=0; C_SKIP=0
 plan_file() { # plan_file <rel>

@@ -9,7 +9,7 @@ $FullTarget = [System.IO.Path]::GetFullPath((Join-Path (Get-Location) $Target))
 if ($FullTarget -eq $Src) { throw "target 不能是脚手架源码自己" }
 $Payload = @("AGENTS.md","ARCHITECTURE.md","HARNESS.md","README.md","SCALING.md",".gitignore","FRAMEWORK-MANIFEST.json","setup.sh","setup.ps1")
 $PayloadDirs = @("docs",".agents/skills",".agents/memory",".agents/workflows",".agents/harness","scripts","src","tests",".muse")
-$SkipRx = "harness-state/|\.framework-new$|\.bak$|/evidence/|__pycache__|\.pyc$|\.pytest_cache|/\.git/|node_modules|\.DS_Store"
+$SkipRx = "harness-state/|\.framework-new$|\.bak$|/evidence/|__pycache__|\.pyc$|\.pytest_cache|/\.git/|node_modules|\.DS_Store|\.mypy_cache|\.ruff_cache"
 $files = New-Object System.Collections.Generic.List[string]
 foreach ($p in $Payload) { if (Test-Path (Join-Path $Src $p)) { $files.Add($p) } }
 foreach ($d in $PayloadDirs) {

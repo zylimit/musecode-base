@@ -1,0 +1,24 @@
+#!/bin/bash
+# musecode-base managed hook (pre-push): 文档-only 快速通道，否则 smoke + verify。
+set -uo pipefail
+ROOT="$(git rev-parse --show-toplevel)" || exit 2
+cd "$ROOT" || exit 2
+range=""
+while read -r _local_ref local_sha _remote_ref _remote_sha; do
+  [ -n "${local_sha:-}" ] || continue
+  if [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then continue; fi
+  if [ "${_remote_sha:-}" = "0000000000000000000000000000000000000000" ] || [ -z "${_remote_sha:-}" ]; then
+    range="$local_sha"
+  else
+    range="$_remote_sha..$local_sha"
+  fi
+done
+if [ -n "$range" ]; then
+  if ! git diff --name-only "$range" 2>/dev/null | grep -qvE '\.(md|txt)$|^docs/'; then
+    echo "pre-push: 文档-only，跳过 verify（smoke 仍跑）"
+    bash scripts/smoke.sh || exit 2
+    exit 0
+  fi
+fi
+bash scripts/smoke.sh || exit 2
+bash scripts/verify.sh || exit 2

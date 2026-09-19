@@ -1,33 +1,42 @@
+---
+name: code-review
+description: 当一批改动完成、合并/发版前需要结构化审查时使用。三阶段九 lens，结论必须落到 file:line。
+---
+
 # code-review
 
-- 版本：1.0.0
-- 适用：合并/交付前对当前变更做结构化评审；高风险变更强制走。不适用：纯文档改字（走直推档）。
-- 输入：变更范围（`git diff --stat` 输出）、关联需求 `docs/REQ-*.md`、触及模块的 catalog 条目（如有）。
-- 输出：评审报告（含 P0/P1/P2 findings，每条带 `path:line` 或复现路径）+ 明确 verdict（APPROVE / FIX_REQUIRED / ESCALATE）。
+- 版本：2.0.0
+- 适用：合并/发版前的改动审查；高风险变更强制走。不适用：纯文档改字（直推）、需对抗深度的发版闸（走 red-blue-review）。
+- 输入：变更范围（`git diff` / commit 区间）+ 关联 REQ + catalog 条目（如有）。
+- 输出：评审报告（P0/P1/P2 findings + verdict：APPROVE / FIX_REQUIRED / ESCALATE）。
 
 ## 步骤
 
-1. 取范围：`git diff --stat` + `git diff` 确认评审对象；删除与重命名单独成节先看（系统性漏看区）。
-2. Stage code（architecture/maintainability/performance）：对照 `ARCHITECTURE.md` 红线与 catalog 声明图。
-3. Stage functional（correctness/testing/reliability）：从需求承诺追真实结果；测试锁定是否覆盖触及面。
-4. Stage trust（security/safety/privacy/resilience）：对照 `docs/QUALITY_CHECKLIST.md` SEC/SAF/PRI/RES 节。
-5. 作者检查：评审者不得是作者（`git log` 作者集比对）；自审一律拒收。
-6. 裁决：任一 error 级 finding 即 FIX_REQUIRED，不被干净 lens 投票稀释；连续 FIX_REQUIRED 达 3 轮则 ESCALATE 交人。
+1. 取范围：`git diff --stat` + 全 diff 确认评审对象；**删除与重命名单独成节先看**；无改动直接回"无可审范围"。
+2. Stage 0 静态先行：先跑 `verify.sh` 的 lint 段与 `fitness.sh`，机器能挑的错不占人工轮次；静态红则直接 FIX_REQUIRED。
+3. Stage code → functional → trust：按三阶段九 lens 过（架构红线/catalog、需求承诺追真实结果、SEC/SAF/PRI/RES）；finding 无 `path:line`/复现路径即无效。
+4. 四态输出：✅ 通过 / ⚠️ 可修可不修（不阻断）/ ❌ 必须修 / ❓ 存疑（回流需求，不猜）；任一 error 即 FIX_REQUIRED，不被干净 lens 投票稀释。
+5. 修复路由：静态缺失→implementer 补；质量问题→dev-builder；缺陷/安全→bug-fixer；需求存疑→product-spec-builder。
+6. 同一轮复核：HIGH 改动的 FIX 由同一 reviewer 再看一次（只看修复点）；连续 FIX_REQUIRED 达 3 轮则 ESCALATE。
+7. 报告：verdict + findings（级别/证据/复现/修复建议）+ Not-verified；高风险变更附 `verify.sh` 与 `check.sh` 结果。
 
 ## 约束与红线
 
-- 只读评审：除评审报告外不写业务文件（`AGENTS.md` §3 最小改动）。
-- finding 无 `path:line`/复现路径即无效 finding（`ARCHITECTURE.md` 红线 3 可验证性）。
+- 只读评审：除报告外不写业务文件（`AGENTS.md` §3 最小改动）。
+- 作者≠评审：评审者不得是改动作者（`git log` 作者集比对），自审拒收。
 - 风格偏好/nit 不阻断；medium/low 不仅凭级别要求再审。
+- 审查 diff 绑定：diff 变一字节结论即 stale，须重审（不可拿旧报告为新 diff 背书）。
 
 ## 验收
 
-- 报告含 verdict + findings（含级别/证据/复现）+ Not-verified（范围外/未运行项）。
-- 高风险变更：`bash scripts/verify.sh` 与 `bash scripts/check.sh` 均已跑过，结果写入报告。
+- 每条 finding 有 file:line 或复现路径；删除/重命名已单列审计。
+- 报告含明确 verdict；FIX_REQUIRED 有须修清单。
 
 ## 示例
 
-```bash
-git diff --stat
-# 按 §步骤 2–4 逐阶段出 findings，最后给 verdict
-```
+审"支付回调重试"改动：Stage trust 发现"重试无幂等键"（P0，`src/pay/notify.py:88`）→ FIX_REQUIRED；另 nit"日志级别"不阻断。
+
+## Donor 出处
+
+- `cc-base/.claude/skills/code-review/SKILL.md`（三阶段九 lens、删除单列、连续 FIX 上报）
+- `codex-base/.agents/skills/code-review/SKILL.md`（证据绑定、diff-bound、裁决规则）

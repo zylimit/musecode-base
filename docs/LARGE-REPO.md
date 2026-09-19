@@ -73,7 +73,7 @@ catalog lint → affected/反向依赖闭包 → task baseline → context pack 
 ## 6. 防腐（arch-check + adr-check + trend 棘轮）
 
 - `arch-check.sh`：声明图校验 + JS/TS/Python 静态 import 实边对照，报越禁边/分层违规（只许同层或向内）/未声明边（漂移 = impact 漏测）/虚边/环。声明与禁令冲突时**禁令赢**。
-- `arch-check.sh --record` 快照边身份集合；`--gate` 按边身份比对（非计数），新边即 fail；`forbidden > 0` 不进棘轮、任何快照命中即 fail。老仓接入：先 record 立基线，旧债慢慢还、新债一分不许添。
+- `arch-check.sh --record` 快照边身份集合到 `.agents/harness/arch-baseline.json`（**随仓提交**，用 git 管基线，不用运行态 jsonl）；`--gate` 按边身份比对，新边即 fail；`forbidden` 边永不可入 baseline。老仓接入：先 record 立基线并提交，旧债慢慢还、新债一分不许添。
 - `check.sh` 的 adr-check：活跃 ADR 的 Enforced-by 必须指向真实 check id / fitness 规则 / harness 能力名或显式 `manual:`；幽灵引用 fail，缺失 warning。
 
 ## 7. 档位表（fast/standard/strict）

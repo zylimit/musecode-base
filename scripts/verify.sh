@@ -26,7 +26,15 @@ while [ $# -gt 0 ]; do
 done
 
 PASS=0; FAIL=0; BLOCKED=0; SKIPPED=0
-gate_log() { mkdir -p .agents/harness-state; printf '%s\tverify\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo unknown)" "$1" >> .agents/harness-state/gate-block.log 2>/dev/null || true; } # musecode-fitness:ignore (ledger is a side channel by design: must never change the verdict)
+gate_log() { mkdir -p .agents/harness-state; printf '%s\tverify\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo unknown)" "$1" >> .agents/harness-state/gate-block.log 2>/dev/null || true; } # musecode-fitness:ignore no-silent-failure reason="ledger旁路，判决不依赖写入成功"
+test_ledger() { # test_ledger <file> <case> <result> : 4-field append (file/case/result/ts)
+  mkdir -p .agents/harness-state
+  printf '{"file":%s,"case":%s,"result":"%s","ts":"%s"}\n' \
+    "$(printf '%s' "$1" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')" \
+    "$(printf '%s' "$2" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')" \
+    "$3" "$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo unknown)" \
+    >> .agents/harness-state/test-ledger.jsonl 2>/dev/null || true # musecode-fitness:ignore no-silent-failure reason="ledger旁路"
+}
 pass() { PASS=$((PASS+1)); echo "PASS: $1"; }
 fail() { FAIL=$((FAIL+1)); echo "FAIL: $1"; gate_log "FAIL $1"; }
 blocked() { BLOCKED=$((BLOCKED+1)); echo "BLOCKED: $1"; gate_log "BLOCKED $1"; }
@@ -45,12 +53,12 @@ touches() { # touches <ext-glob> : FULL 或命中后缀即真
   echo "$CHANGED" | grep -qE "$1" 2>/dev/null
 }
 
-# 1. shell 门禁（本仓脚本恒跑：scripts/ + 根 setup.sh）
+# 1. shell 门禁（本仓脚本恒跑：scripts/ + 根 setup.sh + skill 私有脚本）
 if ls scripts/*.sh >/dev/null 2>&1; then
-  ok=1; for s in scripts/*.sh setup.sh; do [ -f "$s" ] || continue; bash -n "$s" || { fail "bash -n $s"; ok=0; }; done
-  [ "$ok" -eq 1 ] && pass "bash -n scripts/*.sh + setup.sh"
+  ok=1; for s in scripts/*.sh setup.sh .agents/skills/*/scripts/*.sh; do [ -f "$s" ] || continue; bash -n "$s" || { fail "bash -n $s"; ok=0; }; done
+  [ "$ok" -eq 1 ] && pass "bash -n (scripts + setup + skill scripts)"
   if command -v shellcheck >/dev/null 2>&1; then
-    if shellcheck -S warning scripts/*.sh setup.sh >/tmp/verify_shellcheck.log 2>&1; then pass "shellcheck scripts/*.sh + setup.sh"; else fail "shellcheck (see /tmp/verify_shellcheck.log)"; fi
+    if shellcheck -S warning scripts/*.sh setup.sh .agents/skills/*/scripts/*.sh >/tmp/verify_shellcheck.log 2>&1; then pass "shellcheck (scripts + setup + skill scripts)"; else fail "shellcheck (see /tmp/verify_shellcheck.log)"; fi
   else skipped "shellcheck not installed"; fi
 else skipped "no scripts/*.sh"; fi
 
@@ -66,17 +74,20 @@ if touches '\.py$' || [ -f pytest.ini ] || [ -f pyproject.toml ] || ls tests/tes
   else skipped "ruff not installed, no changed .py"; fi
   if ls tests/test_*.py >/dev/null 2>&1; then
     if command -v pytest >/dev/null 2>&1; then
-      if pytest -q 2>/tmp/verify_pytest.log; then pass "pytest -q"; else fail "pytest -q (see /tmp/verify_pytest.log)"; fi
+      if pytest -q 2>/tmp/verify_pytest.log; then pass "pytest -q"; test_ledger "tests/" "pytest -q" "passed"; else fail "pytest -q (see /tmp/verify_pytest.log)"; test_ledger "tests/" "pytest -q" "failed"; fi
     else
-      if python3 -m unittest discover -s tests 2>/tmp/verify_unittest.log; then pass "python3 -m unittest discover -s tests"; else fail "unittest discover (see /tmp/verify_unittest.log)"; fi
+      if python3 -m unittest discover -s tests 2>/tmp/verify_unittest.log; then pass "python3 -m unittest discover -s tests"; test_ledger "tests/" "unittest" "passed"; else fail "unittest discover (see /tmp/verify_unittest.log)"; test_ledger "tests/" "unittest" "failed"; fi
     fi
   else skipped "no tests/test_*.py"; fi
 else skipped "python stack untouched"; fi
 
 # 3. node 栈
 if touches '\.(js|mjs|cjs|ts|tsx)$' || [ -f package.json ]; then
-  if [ -f tsconfig.json ] && command -v npx >/dev/null 2>&1; then
-    if npx --no-install tsc --noEmit 2>/tmp/verify_tsc.log; then pass "tsc --noEmit"; else fail "tsc --noEmit (see /tmp/verify_tsc.log)"; fi
+  TSCONFIG="$(find . -maxdepth 3 -name tsconfig.json -not -path "./node_modules/*" 2>/dev/null | head -n 1 || true)"
+  if [ -n "$TSCONFIG" ] && command -v npx >/dev/null 2>&1; then
+    TSCDIR="$(dirname "$TSCONFIG")"
+    if [ ! -d "$TSCDIR/node_modules" ] && [ ! -d node_modules ]; then blocked "node_modules 缺席（$TSCDIR）：先装依赖再验 tsc";
+    elif (cd "$TSCDIR" && npx --no-install tsc --noEmit) >/tmp/verify_tsc.log 2>&1; then pass "tsc --noEmit ($TSCONFIG)"; else fail "tsc --noEmit (see /tmp/verify_tsc.log)"; fi
   elif touches '\.(ts|tsx)$'; then blocked "tsc unavailable for changed .ts"; else skipped "no tsconfig/changed ts"; fi
   if command -v node >/dev/null 2>&1; then
     ok=1; while IFS= read -r f; do [ -n "$f" ] || continue; [ -f "$f" ] || continue
@@ -84,7 +95,7 @@ if touches '\.(js|mjs|cjs|ts|tsx)$' || [ -f package.json ]; then
     done < <(if [ "$CHANGED" = "FULL" ]; then find .agents/workflows scripts -name '*.js' 2>/dev/null; else echo "$CHANGED" | grep -E '\.(js|mjs|cjs)$' || true; fi)
     [ "$ok" -eq 1 ] && pass "node --check (js scope)"
     if ls tests/*.test.mjs tests/*.test.js >/dev/null 2>&1; then
-      if node --test tests/*.test.mjs tests/*.test.js 2>/tmp/verify_nodetest.log; then pass "node --test"; else fail "node --test (see /tmp/verify_nodetest.log)"; fi
+      if node --test tests/*.test.mjs tests/*.test.js >/tmp/verify_nodetest.log 2>&1; then pass "node --test"; test_ledger "tests/" "node --test" "passed"; else fail "node --test (see /tmp/verify_nodetest.log, stack filtered below)"; test_ledger "tests/" "node --test" "failed"; grep -vE "^\s+at |node:internal" /tmp/verify_nodetest.log | head -n 15 | sed 's/^/  /'; fi
     else skipped "no node tests"; fi
   else blocked "node unavailable"; fi
 else skipped "node stack untouched"; fi

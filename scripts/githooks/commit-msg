@@ -1,0 +1,27 @@
+#!/bin/bash
+# musecode-base managed hook (commit-msg): 首行显示宽度 + 无信息词拒绝。
+# 来源：cc-base/.claude/githooks/commit-msg（显示宽度算法保留，品牌适配）。
+# 规则：首行显示宽度 ≤ 72（CJK 计 2）；拒绝 ^wip$ / ^update$ / ^fix$ / ^test$ 类无信息首行。
+set -uo pipefail
+
+MSG_FILE="${1:-}"
+[ -n "$MSG_FILE" ] && [ -f "$MSG_FILE" ] || { echo "commit-msg: 无效参数" >&2; exit 2; }
+first="$(sed -n '1p' "$MSG_FILE" | sed 's/[[:space:]]*$//')"
+[ -n "$first" ] || { echo "commit-msg: 首行空" >&2; exit 2; }
+
+if printf '%s' "$first" | grep -qiE '^(wip|update|fix|test|tmp|a|1)[.! ]*$'; then
+  echo "commit-msg: 首行无信息（$first）——写清改了什么" >&2; exit 2
+fi
+
+width="$(python3 - "$first" 2>/dev/null <<'PY' || echo 999
+import sys, unicodedata
+w = 0
+for ch in sys.argv[1]:
+    w += 2 if unicodedata.east_asian_width(ch) in ('W', 'F') else 1
+print(w)
+PY
+)"
+if [ "${width:-999}" -gt 72 ] 2>/dev/null; then
+  echo "commit-msg: 首行显示宽度 $width > 72——缩短或换行写正文" >&2; exit 2
+fi
+exit 0
